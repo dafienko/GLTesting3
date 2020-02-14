@@ -1,5 +1,6 @@
 #include <windows.h>
 #include "glext.h"
+#include "wglext.h"
 
 PFNGLCREATEPROGRAMPROC glCreateProgram;
 PFNGLCREATESHADERPROC glCreateShader;
@@ -22,6 +23,8 @@ PFNGLGENVERTEXARRAYSPROC glGenVertexArrays;
 PFNGLBINDVERTEXARRAYPROC glBindVertexArray;
 PFNGLGETINTEGERI_VPROC glGetIntegeri_v;
 PFNGLGETSTRINGIPROC glGetStringi;
+PFNWGLSWAPINTERVALEXTPROC wglSwapIntervalEXT;
+PFNWGLGETSWAPINTERVALEXTPROC wglGetSwapIntervalEXT;
 
 void GLEInit(HANDLE);
 

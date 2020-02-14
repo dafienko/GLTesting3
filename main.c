@@ -69,6 +69,8 @@ int WINAPI WinMain(HINSTANCE hInstance,
 
     init(hOut);
 
+
+
     while (!bQuit)
     {
         if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))

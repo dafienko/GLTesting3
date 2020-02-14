@@ -86,3 +86,85 @@
 	<windows.h>
 	<KHR/khrplatform.h>
 
+1581658514 source:d:\codeblocksworkspace\gltesting3\consoleutil.c
+	<windows.h>
+	<string.h>
+	<stdio.h>
+	<stdarg.h>
+	"consoleUtil.h"
+
+1581657102 d:\codeblocksworkspace\gltesting3\consoleutil.h
+	<windows.h>
+	<stdarg.h>
+
+1581657103 source:d:\codeblocksworkspace\gltesting3\fileutil.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<windows.h>
+	"fileUtil.h"
+	"consoleUtil.h"
+
+1581657103 d:\codeblocksworkspace\gltesting3\fileutil.h
+	<stdio.h>
+
+1581658939 source:d:\codeblocksworkspace\gltesting3\glextensions.c
+	"glExtensions.h"
+	<windows.h>
+	<gl/gl.h>
+	"consoleUtil.h"
+
+1581658948 d:\codeblocksworkspace\gltesting3\glextensions.h
+	<windows.h>
+	"glext.h"
+	"wglext.h"
+
+1581657673 d:\codeblocksworkspace\gltesting3\glext.h
+	<gl/gl.h>
+	<windows.h>
+	<KHR/khrplatform.h>
+
+1581658939 source:d:\codeblocksworkspace\gltesting3\main.c
+	<stdio.h>
+	<windows.h>
+	<gl/gl.h>
+	"shaderUtil.h"
+	"fileUtil.h"
+	"renderer.h"
+	"consoleUtil.h"
+	"glExtensions.h"
+
+1581657103 d:\codeblocksworkspace\gltesting3\shaderutil.h
+
+1581658409 d:\codeblocksworkspace\gltesting3\renderer.h
+	<windows.h>
+
+1581659000 source:d:\codeblocksworkspace\gltesting3\renderer.c
+	<stdio.h>
+	<windows.h>
+	<sys/timeb.h>
+	<time.h>
+	<gl/gl.h>
+	"renderer.h"
+	"glExtensions.h"
+	"shaderUtil.h"
+	"fileUtil.h"
+	"consoleUtil.h"
+
+1581657103 source:d:\codeblocksworkspace\gltesting3\shaderutil.c
+	<stdio.h>
+	<windows.h>
+	<gl/gl.h>
+	"glExtensions.h"
+	"fileUtil.h"
+	"shaderUtil.h"
+	"consoleUtil.h"
+
+1581657524 d:\codeblocksworkspace\gltesting3\khr\khrplatform.h
+	<stdint.h>
+	<inttypes.h>
+	<stdint.h>
+
+1581658913 d:\codeblocksworkspace\gltesting3\wglext.h
+	<windows.h>
+

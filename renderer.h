@@ -6,6 +6,6 @@ typedef struct color {
         float z;
 } color3f;
 
-void frameTick(HWND);
+void frameTick(HANDLE, HWND);
 void display(HANDLE, HDC, HWND);
 void init();

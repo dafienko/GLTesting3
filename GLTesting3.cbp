@@ -57,6 +57,7 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="shaderUtil.h" />
+		<Unit filename="wglext.h" />
 		<Extensions>
 			<code_completion />
 			<envvars />

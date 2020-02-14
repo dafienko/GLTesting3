@@ -50,8 +50,7 @@ void GLEInit(HANDLE hOut) {
     glCompileShader = (PFNGLCOMPILESHADERPROC)getProc(hOut, "glCompileShader");
     glAttachShader = (PFNGLATTACHSHADERPROC)getProc(hOut, "glAttachShader");
     glLinkProgram = (PFNGLLINKPROGRAMPROC)getProc(hOut, "glLinkProgram");
-    //glUseProgram = (PFNGLUSEPROGRAMPROC)getProc(hOut, "glUseProgram");
-    glUseProgram = (PFNGLUSEPROGRAMPROC)wglGetProcAddress("glUseProgram");
+    glUseProgram = (PFNGLUSEPROGRAMPROC)getProc(hOut, "glUseProgram");
     glGetShaderInfoLog = (PFNGLGETSHADERINFOLOGPROC)getProc(hOut, "glGetShaderInfoLog");
     glGetProgramInfoLog = (PFNGLGETPROGRAMINFOLOGPROC)getProc(hOut, "glGetProgramInfoLog");
     glDeleteShader = (PFNGLDELETESHADERPROC)getProc(hOut, "glDeleteShader");
@@ -66,4 +65,6 @@ void GLEInit(HANDLE hOut) {
     glBindVertexArray = (PFNGLBINDVERTEXARRAYPROC)getProc(hOut, "glBindVertexArray");
     glGetIntegeri_v = (PFNGLGETINTEGERI_VPROC)getProc(hOut, "glGetIntegeri_v");
     glGetStringi = (PFNGLGETSTRINGIPROC)getProc(hOut, "glGetStringi");
+    wglSwapIntervalEXT = (PFNWGLSWAPINTERVALEXTPROC)getProc(hOut, "wglSwapIntervalEXT");
+    wglGetSwapIntervalEXT = (PFNWGLGETSWAPINTERVALEXTPROC)getProc(hOut, "wglGetSwapIntervalEXT");
 }

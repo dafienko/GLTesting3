@@ -13,6 +13,10 @@
 GLuint bp = 0;
 GLuint vboId = 0;
 GLuint vaoId = 0;
+int framesSinceLastUpdate = 0;
+int lastMs = 0;
+int lastFrameTime = 0;
+int fps = 0;
 
 #define z 0
 #define t .8
@@ -25,10 +29,9 @@ GLuint vaoId = 0;
             -t, t, z,
             -t, -t, z};
 
-//GLfloat verts[] = {.5, 0, 0};
-
 void display(HANDLE hOut, HDC hdc, HWND hWnd) {  //display function
-    frameTick(hWnd);
+    frameTick(hOut, hWnd);
+
     glClearColor(0.0f, 1.0f, 0.0f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT);
     glClear(GL_DEPTH_BUFFER_BIT);
@@ -42,26 +45,7 @@ void display(HANDLE hOut, HDC hdc, HWND hWnd) {  //display function
 
     glPointSize(30);
     glDrawArrays(GL_TRIANGLES, 0, (sizeof(verts) / sizeof(verts[0])) / 3);
-    //glDrawArrays(GL_POINTS, 0, 1);
 
-    //glPushMatrix();
-
-    /*
-    glBegin(GL_TRIANGLES);
-
-        glColor3f(1.0f, 0.0f, 0.0f);   glVertex2f(1.0f,   1.0f);
-        glColor3f(0.0f, 0.0f, 0.0f);   glVertex2f(1.0f,  -1.0f);
-        glColor3f(0.0f, 0.0f, 1.0f);   glVertex2f(-1.0f, -1.0f);
-
-        glColor3f(0.0f, 0.0f, 1.0f);   glVertex2f(-1.0f,   -1.0f);
-        glColor3f(0.0f, 0.0f, 0.0f);   glVertex2f(-1.0f,  1.0f);
-        glColor3f(1.0f, 0.0f, 0.0f);   glVertex2f(1.0f, 1.0f);
-
-    glEnd();
-    */
-
-
-    //glPopMatrix();
 
     SwapBuffers(hdc);
 }
@@ -71,6 +55,8 @@ void display(HANDLE hOut, HDC hdc, HWND hWnd) {  //display function
 handle to output window
 **/
 void init(HANDLE hOut) {
+    wglSwapIntervalEXT(0);
+
     bp = createBasicProgram(hOut);
 
     glGenVertexArrays(1, &vaoId);
@@ -93,13 +79,13 @@ void init(HANDLE hOut) {
     //*/
 }
 
-int framesSinceLastUpdate = 0;
-int lastMs = 0;
-int lastFrameTime = 0;
-int fps = 0;
-void frameTick(HWND hWnd) {
+void frameTick(HANDLE hOut, HWND hWnd) {
     int ms = GetTickCount();
     int dt = ms - lastFrameTime;
+    if (dt < 0) {
+        lastFrameTime = GetTickCount();
+        return;
+    }
     framesSinceLastUpdate++;
 
     if (dt > 1000) {
