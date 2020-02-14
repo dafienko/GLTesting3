@@ -1,0 +1,1 @@
+int createBasicProgram(HANDLE);

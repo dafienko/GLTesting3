@@ -1,0 +1,88 @@
+# depslib dependency file v1.0
+1581648457 source:c:\users\dafie\desktop\codeblocksworkspace\gltesting3\main.c
+	<stdio.h>
+	<windows.h>
+	<gl/gl.h>
+	"shaderUtil.h"
+	"fileUtil.h"
+	"renderer.h"
+	"consoleUtil.h"
+	"glExtensions.h"
+
+1581627604 source:c:\users\dafie\desktop\codeblocksworkspace\gltesting3\fileutil.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<windows.h>
+	"fileUtil.h"
+	"consoleUtil.h"
+
+1581627593 c:\users\dafie\desktop\codeblocksworkspace\gltesting3\fileutil.h
+	<stdio.h>
+
+1581646655 source:c:\users\dafie\desktop\codeblocksworkspace\gltesting3\shaderutil.c
+	<stdio.h>
+	<windows.h>
+	<gl/gl.h>
+	"glExtensions.h"
+	"fileUtil.h"
+	"shaderUtil.h"
+	"consoleUtil.h"
+
+1581656839 source:c:\users\dafie\desktop\codeblocksworkspace\gltesting3\renderer.c
+	<stdio.h>
+	<windows.h>
+	<sys/timeb.h>
+	<time.h>
+	<gl/gl.h>
+	"renderer.h"
+	"glExtensions.h"
+	"shaderUtil.h"
+	"fileUtil.h"
+	"consoleUtil.h"
+
+1581642885 c:\users\dafie\desktop\codeblocksworkspace\gltesting3\renderer.h
+	<windows.h>
+
+1581627664 c:\users\dafie\desktop\codeblocksworkspace\gltesting3\shaderutil.h
+
+1581627412 c:\users\dafie\desktop\codeblocksworkspace\gltesting3\consoleutil.h
+	<windows.h>
+	<stdarg.h>
+
+1581627399 source:c:\users\dafie\desktop\codeblocksworkspace\gltesting3\consoleutil.c
+	<windows.h>
+	<string.h>
+	<stdio.h>
+	<stdarg.h>
+	"consoleUtil.h"
+
+1580998796 source:c:\users\dafie\desktop\codeblocksworkspace\gltesting3\consoleutil.h
+	<windows.h>
+	<stdarg.h>
+
+1581022568 source:c:\users\dafie\desktop\codeblocksworkspace\gltesting3\fileutil.h
+	<stdio.h>
+
+1580931029 source:c:\users\dafie\desktop\codeblocksworkspace\gltesting3\renderer.h
+	<gl/gl.h>
+	<windows.h>
+
+1580930474 source:c:\users\dafie\desktop\codeblocksworkspace\gltesting3\shaderutil.h
+	<gl/gl.h>
+
+1581647624 source:c:\users\dafie\desktop\codeblocksworkspace\gltesting3\glextensions.c
+	"glExtensions.h"
+	<windows.h>
+	<gl/gl.h>
+	"consoleUtil.h"
+
+1581647617 c:\users\dafie\desktop\codeblocksworkspace\gltesting3\glextensions.h
+	<windows.h>
+	"glext.h"
+
+1581642961 c:\users\dafie\desktop\codeblocksworkspace\gltesting3\glext.h
+	<gl/gl.h>
+	<windows.h>
+	<KHR/khrplatform.h>
+
