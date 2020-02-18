@@ -123,21 +123,13 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
             break;
         case WM_SIZE:
-            hDC = GetDC(hwnd);
-            if (hRC != NULL) {
-                DisableOpenGL(hwnd, hDC, hRC);
-                EnableOpenGL(hwnd, &hDC, &hRC);
-
-            }
-            GetClientRect(hwnd, &rect);
-            //display(hOut, hDC, hwnd);
-            ReleaseDC(hwnd, hDC);
-
-            break;
-        case WM_PAINT:
+            glViewport (0, 0, LOWORD(lParam), HIWORD(lParam));
             hDC = BeginPaint(hwnd, &ps);
-            GetClientRect(hwnd, &rect);
-            //display(hOut, hDC, hwnd);
+
+            if (initialized) {
+                display(hOut, hDC, hwnd);
+            }
+
             EndPaint(hwnd, &ps);
             break;
         default:

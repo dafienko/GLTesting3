@@ -67,4 +67,5 @@ void GLEInit(HANDLE hOut) {
     glGetStringi = (PFNGLGETSTRINGIPROC)getProc(hOut, "glGetStringi");
     wglSwapIntervalEXT = (PFNWGLSWAPINTERVALEXTPROC)getProc(hOut, "wglSwapIntervalEXT");
     wglGetSwapIntervalEXT = (PFNWGLGETSWAPINTERVALEXTPROC)getProc(hOut, "wglGetSwapIntervalEXT");
+    initialized = 1;
 }
