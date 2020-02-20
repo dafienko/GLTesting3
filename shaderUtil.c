@@ -18,7 +18,7 @@ int createBasicProgram(HANDLE hOut) {
     fclose(basicVSFile);
 
     int vs = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vs, vsfd->numLines, vsfd->lines, vsfd->lengths);
+    glShaderSource(vs, vsfd->numLines, (const char**)vsfd->lines, (const int*)vsfd->lengths);
     checkGLError(hOut, "vertex shader source");
     glCompileShader(vs);
     checkGLError(hOut, "vertex shader compilation");
@@ -40,7 +40,7 @@ int createBasicProgram(HANDLE hOut) {
     fclose(basicFSFile);
 
     int fs = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fs, fsfd->numLines, fsfd->lines, fsfd->lengths);
+    glShaderSource(fs, fsfd->numLines, (const char**)fsfd->lines, (const int*)fsfd->lengths);
     checkGLError(hOut, "fragment shader source");
     glCompileShader(fs);
     checkGLError(hOut, "fragment shader compilation");

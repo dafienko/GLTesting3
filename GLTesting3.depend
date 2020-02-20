@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1582031779 source:c:\users\dafie\desktop\codeblocksworkspace\gltesting3\main.c
+1582232481 source:c:\users\dafie\desktop\codeblocksworkspace\gltesting3\main.c
 	<stdio.h>
 	<windows.h>
 	<gl/gl.h>
@@ -20,7 +20,7 @@
 1581627593 c:\users\dafie\desktop\codeblocksworkspace\gltesting3\fileutil.h
 	<stdio.h>
 
-1581646655 source:c:\users\dafie\desktop\codeblocksworkspace\gltesting3\shaderutil.c
+1582232388 source:c:\users\dafie\desktop\codeblocksworkspace\gltesting3\shaderutil.c
 	<stdio.h>
 	<windows.h>
 	<gl/gl.h>
@@ -29,7 +29,7 @@
 	"shaderUtil.h"
 	"consoleUtil.h"
 
-1582031410 source:c:\users\dafie\desktop\codeblocksworkspace\gltesting3\renderer.c
+1582232417 source:c:\users\dafie\desktop\codeblocksworkspace\gltesting3\renderer.c
 	<stdio.h>
 	<windows.h>
 	<sys/timeb.h>
@@ -41,8 +41,9 @@
 	"fileUtil.h"
 	"consoleUtil.h"
 
-1582031131 c:\users\dafie\desktop\codeblocksworkspace\gltesting3\renderer.h
+1582231035 c:\users\dafie\desktop\codeblocksworkspace\gltesting3\renderer.h
 	<windows.h>
+	"glMath.h"
 
 1581627664 c:\users\dafie\desktop\codeblocksworkspace\gltesting3\shaderutil.h
 
@@ -77,7 +78,7 @@
 	<gl/gl.h>
 	"consoleUtil.h"
 
-1582031795 c:\users\dafie\desktop\codeblocksworkspace\gltesting3\glextensions.h
+1582233294 c:\users\dafie\desktop\codeblocksworkspace\gltesting3\glextensions.h
 	<windows.h>
 	"glext.h"
 	"wglext.h"
@@ -171,4 +172,12 @@
 
 1582031131 c:\users\dafie\desktop\codeblocksworkspace\gltesting3\wglext.h
 	<windows.h>
+
+1582233176 source:c:\users\dafie\desktop\codeblocksworkspace\gltesting3\glmath.c
+	"glMath.h"
+	<math.h>
+	<stdio.h>
+
+1582233001 c:\users\dafie\desktop\codeblocksworkspace\gltesting3\glmath.h
+	"consoleUtil.h"
 

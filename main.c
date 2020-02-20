@@ -7,19 +7,20 @@
 #include "renderer.h"
 #include "consoleUtil.h"
 #include "glExtensions.h"
+//#include "glMath.h"
 
 LRESULT CALLBACK WindowProc(HWND, UINT, WPARAM, LPARAM);
 void EnableOpenGL(HWND hwnd, HDC*, HGLRC*);
 void DisableOpenGL(HWND, HDC, HGLRC);
 
+const int baseWidth = 800;
+const int baseHeight = 600;
+
 HANDLE hOut;
 
 HGLRC hRC = NULL;
 
-int WINAPI WinMain(HINSTANCE hInstance,
-                   HINSTANCE hPrevInstance,
-                   LPSTR lpCmdLine,
-                   int nCmdShow)
+int WINAPI WinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,LPSTR lpCmdLine,int nCmdShow)
 {
     WNDCLASSEX wcex;
     HWND hwnd;
@@ -50,8 +51,8 @@ int WINAPI WinMain(HINSTANCE hInstance,
                           WS_OVERLAPPEDWINDOW,
                           CW_USEDEFAULT,
                           CW_USEDEFAULT,
-                          800,
-                          600,
+                          baseWidth,
+                          baseHeight,
                           NULL,
                           NULL,
                           hInstance,
@@ -68,7 +69,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
     GLEInit(hOut);
 
     init(hOut);
-
+    updateSize(baseWidth, baseHeight);
 
 
     while (!bQuit)
@@ -101,7 +102,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     static HDC hDC;
     static PAINTSTRUCT ps;
-    static RECT rect;
+    //static RECT rect;
 
     switch (uMsg)
     {
@@ -123,7 +124,11 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
             break;
         case WM_SIZE:
-            glViewport (0, 0, LOWORD(lParam), HIWORD(lParam));
+            ;
+            int width = LOWORD(lParam);
+            int height = HIWORD(lParam);
+            updateSize(width, height);
+            glViewport (0, 0, width, height);
             hDC = BeginPaint(hwnd, &ps);
 
             if (initialized) {

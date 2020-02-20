@@ -19,15 +19,16 @@ int lastFrameTime = 0;
 int fps = 0;
 
 #define z 0
-#define t .8
+#define t .5
 
-///*
  GLfloat verts[] = {t, t, z,
             t, -t, z,
             -t, -t, z,
             t, t, z,
             -t, t, z,
             -t, -t, z};
+
+
 
 void display(HANDLE hOut, HDC hdc, HWND hWnd) {  //display function
     frameTick(hOut, hWnd);
@@ -54,8 +55,11 @@ void display(HANDLE hOut, HDC hdc, HWND hWnd) {  //display function
 @param hOut
 handle to output window
 **/
+HANDLE out = 0;
+
 void init(HANDLE hOut) {
     wglSwapIntervalEXT(0);
+    out = hOut;
 
     bp = createBasicProgram(hOut);
 
@@ -74,9 +78,13 @@ void init(HANDLE hOut) {
     glBufferData(GL_ARRAY_BUFFER, sizeof(verts), verts, GL_STATIC_DRAW);
     checkGLError(hOut, "glBufferData");
 
-    char* v = glGetString(GL_VERSION);
+    const char* v = (const char*)glGetString(GL_VERSION);
     print(hOut, "version: %s\n", v);
-    //*/
+}
+
+void updateSize(int w, int h) {
+    perspectiveMat = getProjMatrix(70, (double)w/(double)h, .1, 1000);
+    printMat(out, perspectiveMat);
 }
 
 void frameTick(HANDLE hOut, HWND hWnd) {
