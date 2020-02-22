@@ -45,6 +45,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="glExtensions.h" />
+		<Unit filename="glMath.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="glMath.h" />
 		<Unit filename="glext.h" />
 		<Unit filename="main.c">
 			<Option compilerVar="CC" />
