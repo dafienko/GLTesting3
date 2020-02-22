@@ -26,20 +26,53 @@ MESH* m;
 #define tPos 1
 #define yOff 1
 
- GLfloat verts[] = {
-            tPos, tPos + yOff, tPos,
-            tPos, -tPos + yOff, tPos,
-            -tPos, -tPos + yOff,tPos,
-            tPos, tPos + yOff, tPos,
-            -tPos, tPos + yOff, tPos,
-            -tPos, -tPos + yOff, tPos,
+ GLfloat verts[] = { //ccw = outward normal
+            //back face
+            tPos, tPos, -tPos,
+            tPos, -tPos, -tPos,
+            -tPos, -tPos,-tPos,
+            tPos, tPos, -tPos,
+            -tPos, -tPos, -tPos,
+            -tPos, tPos, -tPos,
 
-            tPos, tPos + yOff, tPos,
-            tPos, -tPos + yOff, tPos,
-            -tPos, -tPos + yOff,tPos,
-            tPos, tPos + yOff, tPos,
-            -tPos, tPos + yOff, tPos,
-            -tPos, -tPos + yOff, tPos
+            //front face
+            tPos, tPos, tPos,
+            -tPos, -tPos,tPos,
+            tPos, -tPos, tPos,
+            tPos, tPos, tPos,
+            -tPos, tPos, tPos,
+            -tPos, -tPos, tPos,
+
+            //right face
+            tPos, tPos, tPos,
+            tPos, -tPos, tPos,
+            tPos, -tPos, -tPos,
+            tPos, tPos, tPos,
+            tPos, -tPos, -tPos,
+            tPos, tPos, -tPos,
+
+            //left face
+            -tPos, tPos, tPos,
+            -tPos, -tPos, -tPos,
+            -tPos, -tPos, tPos,
+            -tPos, tPos, tPos,
+            -tPos, tPos, -tPos,
+            -tPos, -tPos, -tPos,
+
+            //top face
+            -tPos, tPos, -tPos,
+            -tPos, tPos, tPos,
+            tPos, tPos, tPos,
+            -tPos, tPos, -tPos,
+            tPos, tPos, tPos,
+            tPos, tPos, -tPos,
+
+            -tPos, -tPos, -tPos,
+            tPos, -tPos, tPos,
+            -tPos, -tPos, tPos,
+            -tPos, -tPos, -tPos,
+            tPos, -tPos, -tPos,
+            tPos, -tPos, tPos,
 };
 
 int timeSincePhysicsUpdate = 0;
@@ -57,7 +90,9 @@ void display(CAMERA* c, HDC hdc, HWND hWnd) {  //display function
             updateGame(timeBetweenPhysicsUpdates);
         }
 
-        glClearColor(0.0f, 1.0f, 0.0f, 0.0f);
+        glEnable(GL_CULL_FACE);
+        float col = .15f;
+        glClearColor(col, col, col, 0.0f);
         glClear(GL_COLOR_BUFFER_BIT);
         glClear(GL_DEPTH_BUFFER_BIT);
 

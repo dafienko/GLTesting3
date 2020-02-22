@@ -100,11 +100,15 @@ int WINAPI WinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,LPSTR lpCmdLine,i
     return msg.wParam;
 }
 
+float sensitivity = .1;
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     static HDC hDC;
     static PAINTSTRUCT ps;
-    //static RECT rect;
+    static RECT rect;
+    static int lastMouseDown = 0;
+    static int lastX = 0;
+    static int lastY = 0;
 
     switch (uMsg)
     {
@@ -115,6 +119,38 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         case WM_DESTROY:
             return 0;
 
+        case WM_MOUSEMOVE:
+            if (wParam == MK_RBUTTON) {
+                GetWindowRect(hwnd, &rect);
+
+                int x = LOWORD(lParam);
+                int y = HIWORD(lParam);
+
+                int dx, dy;
+
+                if (lastMouseDown) {
+                    dx = x - lastX;
+                    dy = y - lastY;
+                    camera->rotation->x += rad(-dy * sensitivity);
+                    camera->rotation->y += rad(-dx * sensitivity);
+
+                    camera->rotation->x = min(max(camera->rotation->x, rad(-80)), rad(80));
+                    lastMouseDown = 0;
+                    SetCursorPos((rect.left + rect.right)/2, (rect.top + rect.bottom)/2);
+                } else {
+                    lastX = x; lastY = y;
+                    lastMouseDown = 1;
+                }
+            } else {
+                lastMouseDown = 0;
+            }
+            break;
+        case WM_RBUTTONDOWN:
+            ShowCursor(FALSE);
+            break;
+        case WM_RBUTTONUP:
+            ShowCursor(TRUE);
+            break;
         case WM_KEYDOWN:
             keyDown(wParam);
 
@@ -136,6 +172,10 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             int height = HIWORD(lParam);
             updateSize(width, height);
             glViewport (0, 0, width, height);
+
+            GetWindowRect(hwnd, &rect);
+            //ClipCursor(&rect);
+
             hDC = BeginPaint(hwnd, &ps);
 
             if (initialized) {

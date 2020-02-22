@@ -126,7 +126,7 @@
 	<windows.h>
 	<KHR/khrplatform.h>
 
-1582350328 source:d:\codeblocksworkspace\gltesting3\main.c
+1582352330 source:d:\codeblocksworkspace\gltesting3\main.c
 	<stdio.h>
 	<windows.h>
 	<gl/gl.h>
@@ -144,7 +144,7 @@
 	<windows.h>
 	"glMath.h"
 
-1582350423 source:d:\codeblocksworkspace\gltesting3\renderer.c
+1582351271 source:d:\codeblocksworkspace\gltesting3\renderer.c
 	<stdio.h>
 	<windows.h>
 	<sys/timeb.h>
@@ -195,7 +195,7 @@
 1582350294 d:\codeblocksworkspace\gltesting3\glmath.h
 	"consoleUtil.h"
 
-1582348339 source:d:\codeblocksworkspace\gltesting3\game.c
+1582351076 source:d:\codeblocksworkspace\gltesting3\game.c
 	<windows.h>
 	<math.h>
 	"game.h"

@@ -53,11 +53,12 @@ void updateGame(float dt) {
     lookVector.z = -sin((camera->rotation->y) + rad(90));
 
     vec3 upVector = identityVec3;
-    upVector.y = yDir * speed;
+    upVector.y = yDir;
 
     vec3 movementVector = addVec3(mulVec3(rightVector, xDir), mulVec3(lookVector, -zDir));
     movementVector = addVec3(upVector, movementVector);
     float m = vec3Magnitude(movementVector);
+
     if (m != 0) {
         movementVector = normalizeVec3(movementVector);
     }
