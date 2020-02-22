@@ -68,5 +68,6 @@ void GLEInit(HANDLE hOut) {
     wglSwapIntervalEXT = (PFNWGLSWAPINTERVALEXTPROC)getProc(hOut, "wglSwapIntervalEXT");
     wglGetSwapIntervalEXT = (PFNWGLGETSWAPINTERVALEXTPROC)getProc(hOut, "wglGetSwapIntervalEXT");
     glUniformMatrix4fv = (PFNGLUNIFORMMATRIX4FVPROC)getProc(hOut, "glUniformMatrix4fv");
+    glGetUniformLocation = (PFNGLGETUNIFORMLOCATIONPROC)getProc(hOut, "glGetUniformLocation");
     initialized = 1;
 }

@@ -1,6 +1,12 @@
 #include <windows.h>
 #include "glMath.h"
 
+typedef struct model {
+    float* verts;
+    vec3* rotation;
+    vec3* position;
+} model;
+
 mat4 perspectiveMat;
 
 typedef struct color {
