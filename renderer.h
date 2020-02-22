@@ -1,11 +1,11 @@
 #include <windows.h>
 #include "glMath.h"
 
-typedef struct model {
+typedef struct mesh {
     float* verts;
     vec3* rotation;
     vec3* position;
-} MODEL;
+} MESH;
 
 typedef struct camera {
     vec3* position;

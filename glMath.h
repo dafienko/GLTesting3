@@ -34,7 +34,7 @@ mat4 rotateX(float);
 mat4 rotateY(float);
 mat4 rotateZ(float);
 
-float vec3Magnitude(vec);
+float vec3Magnitude(vec3);
 
 mat4 fromPositionAndRotation(vec3, vec3);
 

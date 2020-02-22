@@ -178,6 +178,7 @@ mat4 inverseMat(mat4 m) {
     inv.n *= det;
     inv.o *= det;
     inv.p *= det;
+    return inv;
 }
 
 mat4 mulMat(mat4 m1, mat4 m2) {
@@ -250,16 +251,16 @@ void clearMatrix(mat4* m) {
     m->m = 0; m->n = 0; m->o = 0; m->p = 0;
 }
 
+//   http://www.songho.ca/opengl/gl_projectionmatrix.html
 void getPerspectiveMatrix(mat4* dest, float fov, float aspect, float nearDist, float farDist)
 {
-    float top = nearDist * tan((PI/180) * (fov/2));
-    float r = top * aspect;
-    float l = -r;
+    float t = nearDist * tan((PI/180) * (fov/2));
+    float r = t* aspect;
 
     clearMatrix(dest);
 
     dest->a = nearDist/r;
-    dest->f = nearDist/l;
+    dest->f = nearDist/t;
     dest->k = -(farDist + nearDist)/(farDist-nearDist);
     dest->l = (-2 * farDist * nearDist) / (farDist - nearDist);
     dest->o = -1;

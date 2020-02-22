@@ -8,6 +8,7 @@
 #include "consoleUtil.h"
 #include "glExtensions.h"
 #include "keyboard.h"
+#include "game.h"
 
 LRESULT CALLBACK WindowProc(HWND, UINT, WPARAM, LPARAM);
 void EnableOpenGL(HWND hwnd, HDC*, HGLRC*);

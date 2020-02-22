@@ -20,23 +20,26 @@ void updateGame(float dt) {
     float xDir = 0;
     float zDir = 0;
     float yDir = 0;
+
     if (isKeyDown(0x57)) { // w
         zDir += -1;
     }
     if (isKeyDown(0x53)) { // s
         zDir += 1;
     }
+
     if (isKeyDown(0x41)) { // a
         xDir += -1;
     }
     if (isKeyDown(0x44)) { // d
         xDir += 1;
     }
+
     if (isKeyDown(0x45)) { // e
-        yDir += -1;
+        yDir += 1;
     }
     if (isKeyDown(0x51)) { // q
-        yDir += 1;
+        yDir += -1;
     }
 
     vec3 rightVector = identityVec3;
@@ -65,10 +68,10 @@ void updateGame(float dt) {
     *(camera->position) = addVec3(pos, movementVector);
 
     if (isKeyDown(VK_UP)) {
-        camera->rotation->x += dt * -.00001;
+        camera->rotation->x += dt * .00001;
     }
     if (isKeyDown(VK_DOWN)) {
-        camera->rotation->x += dt * .00001;
+        camera->rotation->x += dt * -.00001;
     }
     camera->rotation->x = min(max(camera->rotation->x, rad(-80)), rad(80));
 

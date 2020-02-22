@@ -19,19 +19,28 @@ int lastMs = 0;
 int lastFrameTime = 0;
 int fps = 0;
 
-#define zPos 0
-#define tPos .5
-
- GLfloat verts[] = {tPos, tPos, zPos,
-            tPos, -tPos, zPos,
-            -tPos, -tPos,zPos,
-            tPos, tPos, zPos,
-            -tPos, tPos, zPos,
-            -tPos, -tPos, zPos};
-
 //uniforms
 GLint projLoc, mvLoc;
-MODEL* m;
+MESH* m;
+
+#define tPos 1
+#define yOff 1
+
+ GLfloat verts[] = {
+            tPos, tPos + yOff, tPos,
+            tPos, -tPos + yOff, tPos,
+            -tPos, -tPos + yOff,tPos,
+            tPos, tPos + yOff, tPos,
+            -tPos, tPos + yOff, tPos,
+            -tPos, -tPos + yOff, tPos,
+
+            tPos, tPos + yOff, tPos,
+            tPos, -tPos + yOff, tPos,
+            -tPos, -tPos + yOff,tPos,
+            tPos, tPos + yOff, tPos,
+            -tPos, tPos + yOff, tPos,
+            -tPos, -tPos + yOff, tPos
+};
 
 int timeSincePhysicsUpdate = 0;
 const int timeBetweenPhysicsUpdates = 50; // milliseconds
@@ -91,9 +100,9 @@ void initRenderer() {
     *(camera->position) = (vec3){0, 0, 0};
 
     (camera->rotation) = calloc(1, sizeof(vec3));
-    *(camera->rotation) = (vec3){0, rad(45), 0};
+    *(camera->rotation) = (vec3){0, 0, 0};
 
-    m = calloc(1, sizeof(MODEL));
+    m = calloc(1, sizeof(MESH));
     m->verts = verts;
 
     (m->position) = calloc(1, sizeof(vec3));
