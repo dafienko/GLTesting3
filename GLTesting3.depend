@@ -126,7 +126,7 @@
 	<windows.h>
 	<KHR/khrplatform.h>
 
-1582336315 source:d:\codeblocksworkspace\gltesting3\main.c
+1582343761 source:d:\codeblocksworkspace\gltesting3\main.c
 	<stdio.h>
 	<windows.h>
 	<gl/gl.h>
@@ -135,14 +135,15 @@
 	"renderer.h"
 	"consoleUtil.h"
 	"glExtensions.h"
+	"keyboard.h"
 
 1582336380 d:\codeblocksworkspace\gltesting3\shaderutil.h
 
-1582336204 d:\codeblocksworkspace\gltesting3\renderer.h
+1582343511 d:\codeblocksworkspace\gltesting3\renderer.h
 	<windows.h>
 	"glMath.h"
 
-1582336363 source:d:\codeblocksworkspace\gltesting3\renderer.c
+1582345711 source:d:\codeblocksworkspace\gltesting3\renderer.c
 	<stdio.h>
 	<windows.h>
 	<sys/timeb.h>
@@ -153,6 +154,7 @@
 	"shaderUtil.h"
 	"fileUtil.h"
 	"consoleUtil.h"
+	"game.h"
 
 1582336205 source:d:\codeblocksworkspace\gltesting3\shaderutil.c
 	<stdio.h>
@@ -183,12 +185,28 @@
 1582322176 c:\users\dafie\desktop\codeblocksworkspace\gltesting3\glmath.h
 	"consoleUtil.h"
 
-1582336207 source:d:\codeblocksworkspace\gltesting3\glmath.c
+1582348189 source:d:\codeblocksworkspace\gltesting3\glmath.c
 	"glMath.h"
 	<math.h>
 	<stdio.h>
 	"consoleUtil.h"
 
-1582336207 d:\codeblocksworkspace\gltesting3\glmath.h
+1582348171 d:\codeblocksworkspace\gltesting3\glmath.h
 	"consoleUtil.h"
+
+1582348183 source:d:\codeblocksworkspace\gltesting3\game.c
+	<windows.h>
+	<math.h>
+	"game.h"
+	"keyboard.h"
+	"renderer.h"
+	"consoleUtil.h"
+
+1582341573 d:\codeblocksworkspace\gltesting3\game.h
+
+1582343741 d:\codeblocksworkspace\gltesting3\keyboard.h
+
+1582344139 source:d:\codeblocksworkspace\gltesting3\keyboard.c
+	<windows.h>
+	"keyboard.h"
 

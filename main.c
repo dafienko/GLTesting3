@@ -7,7 +7,7 @@
 #include "renderer.h"
 #include "consoleUtil.h"
 #include "glExtensions.h"
-//#include "glMath.h"
+#include "keyboard.h"
 
 LRESULT CALLBACK WindowProc(HWND, UINT, WPARAM, LPARAM);
 void EnableOpenGL(HWND hwnd, HDC*, HGLRC*);
@@ -15,8 +15,6 @@ void DisableOpenGL(HWND, HDC, HGLRC);
 
 const int baseWidth = 800;
 const int baseHeight = 600;
-
-HANDLE hOut;
 
 HGLRC hRC = NULL;
 
@@ -60,17 +58,19 @@ int WINAPI WinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,LPSTR lpCmdLine,i
 
 
     AllocConsole();
-    hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+    setHandle(GetStdHandle(STD_OUTPUT_HANDLE));
 
     ShowWindow(hwnd, TRUE);
 
     EnableOpenGL(hwnd, &hDC, &hRC);
 
     GLEInit();
+    initKeyboard();
+    initRenderer();
 
-    init();
     updateSize(baseWidth, baseHeight);
 
+    initGame();
 
     while (!bQuit)
     {
@@ -86,7 +86,8 @@ int WINAPI WinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,LPSTR lpCmdLine,i
                 DispatchMessage(&msg);
             }
         } else {
-            display(hDC, hwnd);
+            swapKbdBuffer();
+            display(camera, hDC, hwnd);
         }
     }
 
@@ -114,13 +115,18 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             return 0;
 
         case WM_KEYDOWN:
+            keyDown(wParam);
 
             switch (wParam)
             {
                 case VK_ESCAPE:
                     PostQuitMessage(0);
-                break;
+                    break;
             }
+
+            break;
+        case WM_KEYUP:
+            keyUp(wParam);
 
             break;
         case WM_SIZE:
@@ -132,7 +138,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             hDC = BeginPaint(hwnd, &ps);
 
             if (initialized) {
-                display(hDC, hwnd);
+                display(camera, hDC, hwnd);
             }
 
             EndPaint(hwnd, &ps);

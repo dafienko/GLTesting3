@@ -9,6 +9,7 @@
 #include "shaderUtil.h"
 #include "fileUtil.h"
 #include "consoleUtil.h"
+#include "game.h"
 
 GLuint bp = 0;
 GLuint vboId = 0;
@@ -18,25 +19,34 @@ int lastMs = 0;
 int lastFrameTime = 0;
 int fps = 0;
 
-#define z 0
-#define t .5
+#define zPos 0
+#define tPos .5
 
- GLfloat verts[] = {t, t, z,
-            t, -t, z,
-            -t, -t, z,
-            t, t, z,
-            -t, t, z,
-            -t, -t, z};
+ GLfloat verts[] = {tPos, tPos, zPos,
+            tPos, -tPos, zPos,
+            -tPos, -tPos,zPos,
+            tPos, tPos, zPos,
+            -tPos, tPos, zPos,
+            -tPos, -tPos, zPos};
 
-model* m;
-
+//uniforms
 GLint projLoc, mvLoc;
+MODEL* m;
 
+int timeSincePhysicsUpdate = 0;
+const int timeBetweenPhysicsUpdates = 50; // milliseconds
 
 int displayEnabled = 1; // for use with debugging shaders
-void display(HDC hdc, HWND hWnd) {  //display function
+void display(CAMERA* c, HDC hdc, HWND hWnd) {  //display function
     if (displayEnabled) {
-        frameTick(hWnd);
+        int ms = frameTick(hWnd);
+        float dt = ms / 1000.0;
+        updateFrame(dt);
+        timeSincePhysicsUpdate += ms;
+        if (timeSincePhysicsUpdate >= timeBetweenPhysicsUpdates) {
+            timeSincePhysicsUpdate -= timeBetweenPhysicsUpdates;
+            updateGame(timeBetweenPhysicsUpdates);
+        }
 
         glClearColor(0.0f, 1.0f, 0.0f, 0.0f);
         glClear(GL_COLOR_BUFFER_BIT);
@@ -51,9 +61,12 @@ void display(HDC hdc, HWND hWnd) {  //display function
         glUniformMatrix4fv(projLoc, 1, GL_FALSE, vals);
         free(vals);
 
-        m->rotation->y += .001;
+        //m->rotation->y += .001;
 
-        mat4 mvMat = fromPositionAndRotation(*(m->position), *(m->rotation));
+        mat4 vMat = fromPositionAndRotation(inverseVec3(*(c->position)), inverseVec3(*(c->rotation)));
+        mat4 mMat = fromPositionAndRotation(*(m->position), *(m->rotation));
+        mat4 mvMat = mulMat(mulMat(identityMatrix, vMat), mMat);
+
         vals = getVals(mvMat);
         glUniformMatrix4fv(mvLoc, 1, GL_FALSE, vals);
         free(vals);
@@ -72,15 +85,22 @@ void display(HDC hdc, HWND hWnd) {  //display function
     }
 }
 
-void init() {
-    m = calloc(1, sizeof(model));
+void initRenderer() {
+    camera = calloc(1, sizeof(CAMERA));
+    (camera->position) = calloc(1, sizeof(vec3));
+    *(camera->position) = (vec3){0, 0, 0};
+
+    (camera->rotation) = calloc(1, sizeof(vec3));
+    *(camera->rotation) = (vec3){0, rad(45), 0};
+
+    m = calloc(1, sizeof(MODEL));
     m->verts = verts;
 
     (m->position) = calloc(1, sizeof(vec3));
     *(m->position) = (vec3){0, 0, -2};
 
     (m->rotation) = calloc(1, sizeof(vec3));
-    *(m->rotation) = (vec3){0, rad(-30), 0};
+    *(m->rotation) = (vec3){0, 0, 0};
 
     wglSwapIntervalEXT(0);
 
@@ -106,15 +126,15 @@ void init() {
 }
 
 void updateSize(int w, int h) {
-    getPerspectiveMatrix(&perspectiveMat, 70.0, (double)w/(double)h, 1, 100);
+    getPerspectiveMatrix(&perspectiveMat, 70.0, (double)w/(double)h, .1, 100);
 }
 
-void frameTick(HWND hWnd) {
+int frameTick(HWND hWnd) {
     int ms = GetTickCount();
     int dt = ms - lastFrameTime;
     if (dt < 0) {
         lastFrameTime = GetTickCount();
-        return;
+        return 0;
     }
     framesSinceLastUpdate++;
 
@@ -129,4 +149,6 @@ void frameTick(HWND hWnd) {
         framesSinceLastUpdate = 0;
 
     }
+
+    return dt;
 }

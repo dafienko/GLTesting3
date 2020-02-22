@@ -5,7 +5,12 @@ typedef struct model {
     float* verts;
     vec3* rotation;
     vec3* position;
-} model;
+} MODEL;
+
+typedef struct camera {
+    vec3* position;
+    vec3* rotation;
+} CAMERA;
 
 mat4 perspectiveMat;
 
@@ -15,8 +20,9 @@ typedef struct color {
         float z;
 } color3f;
 
+CAMERA* camera;
 
 void updateSize(int width, int height);
-void frameTick(HWND);
-void display(HDC, HWND);
-void init();
+int frameTick(HWND);
+void display(CAMERA*, HDC, HWND);
+void initRenderer();

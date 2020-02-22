@@ -3,12 +3,182 @@
 #include <stdio.h>
 #include "consoleUtil.h"
 
-vec4 mulVec(mat4 m, vec4 v) {
-    return (vec4){m.a*v.x + m.b*v.y + m.c*v.z + m.d*v.w,
-        m.e*v.x + m.f*v.y + m.g*v.z + m.h*v.w,
-        m.i*v.x + m.j*v.y + m.k*v.z + m.l*v.w,
-        m.m*v.x + m.n*v.y + m.o*v.z + m.p*v.w};
+/*
+    a b c d
+    e f g h
+    i j k l
+    m n o p
+*/
+
+float vec3Magnitude(vec3 v) {
+    return (sqrt(v.x*v.x + v.y*v.y + v.z*v.z));
+}
+
+vec3 getPosition(mat4 m) {
+    return (vec3) {m.d, m.h, m.l};
+}
+
+vec3 mulVec3(vec3 v, float f) {
+    return (vec3){v.x*f, v.y*f, v.z*f};
+}
+
+vec3 addVec3(vec3 v1, vec3 v2) {
+    return (vec3){v1.x + v2.x, v1.y + v2.y, v1.z + v2.z};
+}
+
+vec4 mulMatVec4(mat4 m, vec4 v) {
+    return (vec4){  m.a*v.x + m.b*v.y + m.c*v.z + m.d*v.w,
+                    m.e*v.x + m.f*v.y + m.g*v.z + m.h*v.w,
+                    m.i*v.x + m.j*v.y + m.k*v.z + m.l*v.w,
+                    m.m*v.x + m.n*v.y + m.o*v.z + m.p*v.w};
 };
+
+vec3 inverseVec3(vec3 v) {
+    return (vec3){-v.x, -v.y, -v.z};
+}
+
+mat4 inverseMat(mat4 m) {
+    mat4 inv = identityMatrix;
+
+    inv.a = m.f  * m.k * m.p -
+              m.f  * m.l * m.o -
+              m.j  * m.g  * m.p +
+              m.j  * m.h  * m.o +
+              m.n * m.g  * m.l -
+              m.n * m.h  * m.k;
+
+    inv.e = -m.e  * m.k * m.p +
+              m.e  * m.l * m.o +
+              m.i  * m.g  * m.p -
+              m.i  * m.h  * m.o -
+              m.m * m.g  * m.l +
+              m.m * m.h  * m.k;
+
+    inv.i = m.e  * m.j * m.p -
+              m.e  * m.l * m.n -
+              m.i  * m.f * m.p +
+              m.i  * m.h * m.n +
+              m.m * m.f * m.l -
+              m.m * m.h * m.j;
+
+    inv.m = -m.e  * m.j * m.o +
+                m.e  * m.k * m.n +
+                m.i  * m.f * m.o -
+                m.i  * m.g * m.n -
+                m.m * m.f * m.k +
+                m.m * m.g * m.j;
+
+    inv.b = -m.b  * m.k * m.p +
+              m.b  * m.l * m.o +
+              m.j  * m.c * m.p -
+              m.j  * m.d * m.o -
+              m.n * m.c * m.l +
+              m.n * m.d * m.k;
+
+    inv.f = m.a  * m.k * m.p -
+              m.a  * m.l * m.o -
+              m.i  * m.c * m.p +
+              m.i  * m.d * m.o +
+              m.m * m.c * m.l -
+              m.m * m.d * m.k;
+
+    inv.j = -m.a  * m.j * m.p +
+              m.a  * m.l * m.n +
+              m.i  * m.b * m.p -
+              m.i  * m.d * m.n -
+              m.m * m.b * m.l +
+              m.m * m.d * m.j;
+
+    inv.n = m.a  * m.j * m.o -
+              m.a  * m.k * m.n -
+              m.i  * m.b * m.o +
+              m.i  * m.c * m.n +
+              m.m * m.b * m.k -
+              m.m * m.c * m.j;
+
+    inv.c = m.b  * m.g * m.p -
+              m.b  * m.h * m.o -
+              m.f  * m.c * m.p +
+              m.f  * m.d * m.o +
+              m.n * m.c * m.h -
+              m.n * m.d * m.g;
+
+    inv.g = -m.a  * m.g * m.p +
+              m.a  * m.h * m.o +
+              m.e  * m.c * m.p -
+              m.e  * m.d * m.o -
+              m.m * m.c * m.h +
+              m.m * m.d * m.g;
+
+    inv.k = m.a  * m.f * m.p -
+              m.a  * m.h * m.n -
+              m.e  * m.b * m.p +
+              m.e  * m.d * m.n +
+              m.m * m.b * m.h -
+              m.m * m.d * m.f;
+
+    inv.o = -m.a  * m.f * m.o +
+                m.a  * m.g * m.n +
+                m.e  * m.b * m.o -
+                m.e  * m.c * m.n -
+                m.m * m.b * m.g +
+                m.m * m.c * m.f;
+
+    inv.d = -m.b * m.g * m.l +
+              m.b * m.h * m.k +
+              m.f * m.c * m.l -
+              m.f * m.d * m.k -
+              m.j * m.c * m.h +
+              m.j * m.d * m.g;
+
+    inv.h = m.a * m.g * m.l -
+              m.a * m.h * m.k -
+              m.e * m.c * m.l +
+              m.e * m.d * m.k +
+              m.i * m.c * m.h -
+              m.i * m.d * m.g;
+
+    inv.l = -m.a * m.f * m.l +
+                m.a * m.h * m.j +
+                m.e * m.b * m.l -
+                m.e * m.d * m.j -
+                m.i * m.b * m.h +
+                m.i * m.d * m.f;
+
+    inv.p = m.a * m.f * m.k -
+              m.a * m.g * m.j -
+              m.e * m.b * m.k +
+              m.e * m.c * m.j +
+              m.i * m.b * m.g -
+              m.i * m.c * m.f;
+
+    float det = m.a * inv.a + m.b * inv.e + m.c * inv.i + m.d * inv.m;
+
+    if (det == 0)
+        return identityMatrix;
+
+    det = 1.0 / det;
+
+    inv.a *= det;
+    inv.b *= det;
+    inv.c *= det;
+    inv.d *= det;
+
+    inv.e *= det;
+    inv.f *= det;
+    inv.g *= det;
+    inv.h *= det;
+
+    inv.i *= det;
+    inv.j *= det;
+    inv.k *= det;
+    inv.l *= det;
+
+    inv.m *= det;
+    inv.n *= det;
+    inv.o *= det;
+    inv.p *= det;
+}
 
 mat4 mulMat(mat4 m1, mat4 m2) {
     return (mat4){
@@ -68,6 +238,11 @@ mat4 fromTranslation(float x, float y, float z) {
                     0, 0, 0, 1};
 }
 
+vec3 normalizeVec3(vec3 v) {
+    float d = vec3Magnitude(v);
+    return (vec3) {v.x/d, v.y/d, v.z/d};
+}
+
 void clearMatrix(mat4* m) {
     m->a = 0; m->b = 0; m->c = 0; m->d = 0;
     m->e = 0; m->f = 0; m->g = 0; m->h = 0;
@@ -109,8 +284,8 @@ mat4 rotateXYZ(float x, float y, float z) {
 }
 
 mat4 fromPositionAndRotation(vec3 position, vec3 rotation) {
-    //return mulMat(rotateXYZ(rotation.x, rotation.y, rotation.z), fromTranslation(position.x, position.y, position.z));
-    return mulMat(fromTranslation(position.x, position.y, position.z), rotateXYZ(rotation.x, rotation.y, rotation.z));
+    return mulMat(rotateXYZ(rotation.x, rotation.y, rotation.z), fromTranslation(position.x, position.y, position.z));
+    //return mulMat(fromTranslation(position.x, position.y, position.z), rotateXYZ(rotation.x, rotation.y, rotation.z));
 }
 
 void printVec3(vec3 v) {
