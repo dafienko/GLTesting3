@@ -12,9 +12,9 @@ FILE* getFile(const char* pcstrFileName) {
     return fptrResult;
 }
 
-void printFileData(HANDLE hOut, FILEDATA* fd) {
+void printFileData(FILEDATA* fd) {
     for (int i = 0; i < fd->numLines; i++) {
-        print(hOut, *(fd->lines + i));
+        print(*(fd->lines + i));
     }
 }
 
@@ -33,7 +33,7 @@ int getFileLength(FILE* pfFile) { //returns the number of lines in the file
     return iNumLines;
 }
 
-FILEDATA* getFileData(HANDLE hOut, FILE* pfFile) {
+FILEDATA* getFileData(FILE* pfFile) {
     int iNumLines = getFileLength(pfFile);
     char** ppcstrLines = calloc(iNumLines, sizeof(char*));
     int* piLengths = calloc(iNumLines, sizeof(int));

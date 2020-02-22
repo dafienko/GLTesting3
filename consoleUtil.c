@@ -5,7 +5,13 @@
 
 #include "consoleUtil.h"
 
-void print(HANDLE hOut, const char* str, ... ) {
+HANDLE hOut;
+
+void setHandle(HANDLE h) {
+    hOut = h;
+}
+
+void print(const char* str, ... ) {
     va_list args;
     va_start (args, str);
     char* buffer = calloc((strlen(str) + 10) * 2, sizeof(char));

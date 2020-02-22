@@ -88,18 +88,18 @@
 	<windows.h>
 	<KHR/khrplatform.h>
 
-1581658514 source:d:\codeblocksworkspace\gltesting3\consoleutil.c
+1582336302 source:d:\codeblocksworkspace\gltesting3\consoleutil.c
 	<windows.h>
 	<string.h>
 	<stdio.h>
 	<stdarg.h>
 	"consoleUtil.h"
 
-1581657102 d:\codeblocksworkspace\gltesting3\consoleutil.h
+1582336301 d:\codeblocksworkspace\gltesting3\consoleutil.h
 	<windows.h>
 	<stdarg.h>
 
-1581657103 source:d:\codeblocksworkspace\gltesting3\fileutil.c
+1582336425 source:d:\codeblocksworkspace\gltesting3\fileutil.c
 	<stdio.h>
 	<stdlib.h>
 	<string.h>
@@ -107,16 +107,16 @@
 	"fileUtil.h"
 	"consoleUtil.h"
 
-1581657103 d:\codeblocksworkspace\gltesting3\fileutil.h
+1582336397 d:\codeblocksworkspace\gltesting3\fileutil.h
 	<stdio.h>
 
-1581658939 source:d:\codeblocksworkspace\gltesting3\glextensions.c
+1582336205 source:d:\codeblocksworkspace\gltesting3\glextensions.c
 	"glExtensions.h"
 	<windows.h>
 	<gl/gl.h>
 	"consoleUtil.h"
 
-1581658948 d:\codeblocksworkspace\gltesting3\glextensions.h
+1582336206 d:\codeblocksworkspace\gltesting3\glextensions.h
 	<windows.h>
 	"glext.h"
 	"wglext.h"
@@ -126,7 +126,7 @@
 	<windows.h>
 	<KHR/khrplatform.h>
 
-1581658939 source:d:\codeblocksworkspace\gltesting3\main.c
+1582336315 source:d:\codeblocksworkspace\gltesting3\main.c
 	<stdio.h>
 	<windows.h>
 	<gl/gl.h>
@@ -136,12 +136,13 @@
 	"consoleUtil.h"
 	"glExtensions.h"
 
-1581657103 d:\codeblocksworkspace\gltesting3\shaderutil.h
+1582336380 d:\codeblocksworkspace\gltesting3\shaderutil.h
 
-1581658409 d:\codeblocksworkspace\gltesting3\renderer.h
+1582336204 d:\codeblocksworkspace\gltesting3\renderer.h
 	<windows.h>
+	"glMath.h"
 
-1581659000 source:d:\codeblocksworkspace\gltesting3\renderer.c
+1582336363 source:d:\codeblocksworkspace\gltesting3\renderer.c
 	<stdio.h>
 	<windows.h>
 	<sys/timeb.h>
@@ -153,7 +154,7 @@
 	"fileUtil.h"
 	"consoleUtil.h"
 
-1581657103 source:d:\codeblocksworkspace\gltesting3\shaderutil.c
+1582336205 source:d:\codeblocksworkspace\gltesting3\shaderutil.c
 	<stdio.h>
 	<windows.h>
 	<gl/gl.h>
@@ -180,5 +181,14 @@
 	"consoleUtil.h"
 
 1582322176 c:\users\dafie\desktop\codeblocksworkspace\gltesting3\glmath.h
+	"consoleUtil.h"
+
+1582336207 source:d:\codeblocksworkspace\gltesting3\glmath.c
+	"glMath.h"
+	<math.h>
+	<stdio.h>
+	"consoleUtil.h"
+
+1582336207 d:\codeblocksworkspace\gltesting3\glmath.h
 	"consoleUtil.h"
 

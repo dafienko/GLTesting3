@@ -1,4 +1,5 @@
 #include <windows.h>
 #include <stdarg.h>
 
-void print(HANDLE, const char*, ... );
+void print(const char*, ... );
+void setHandle(HANDLE);

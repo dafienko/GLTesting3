@@ -1,1 +1,1 @@
-int createBasicProgram(HANDLE);
+int createBasicProgram();

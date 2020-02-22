@@ -11,24 +11,24 @@
 
 char errorBuffer[ERROR_BUFFER_SIZE];
 
-int createBasicProgram(HANDLE hOut) {
+int createBasicProgram() {
     //vertex shader bullcrap
     FILE* basicVSFile = getFile("shaders/basic.vs");
-    FILEDATA* vsfd = getFileData(hOut, basicVSFile);
+    FILEDATA* vsfd = getFileData(basicVSFile);
     fclose(basicVSFile);
 
     int vs = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(vs, vsfd->numLines, (const char**)vsfd->lines, (const int*)vsfd->lengths);
-    checkGLError(hOut, "vertex shader source");
+    checkGLError("vertex shader source");
     glCompileShader(vs);
-    checkGLError(hOut, "vertex shader compilation");
+    checkGLError("vertex shader compilation");
 
     int actualLength = 0;
     glGetShaderInfoLog(vs, ERROR_BUFFER_SIZE, &actualLength, errorBuffer);
     if (actualLength > 0) {
-        print(hOut, "deleting vertex shader\n");
+        print("deleting vertex shader\n");
         glDeleteShader(vs);
-        print(hOut, errorBuffer);
+        print(errorBuffer);
         return -1;
     }
     freeFileData(vsfd);
@@ -36,45 +36,45 @@ int createBasicProgram(HANDLE hOut) {
 
     //fragment shader bullcrap
     FILE* basicFSFile = getFile("shaders/basic.fs");
-    FILEDATA* fsfd = getFileData(hOut, basicFSFile);
+    FILEDATA* fsfd = getFileData(basicFSFile);
     fclose(basicFSFile);
 
     int fs = glCreateShader(GL_FRAGMENT_SHADER);
     glShaderSource(fs, fsfd->numLines, (const char**)fsfd->lines, (const int*)fsfd->lengths);
-    checkGLError(hOut, "fragment shader source");
+    checkGLError("fragment shader source");
     glCompileShader(fs);
-    checkGLError(hOut, "fragment shader compilation");
+    checkGLError("fragment shader compilation");
 
     glGetShaderInfoLog(fs, ERROR_BUFFER_SIZE, &actualLength, errorBuffer);
     if (actualLength > 0) {
-        print(hOut, "deleting fragment shader\n");
+        print("deleting fragment shader\n");
         glDeleteShader(fs);
-        print(hOut, errorBuffer);
+        print(errorBuffer);
         return -1;
     }
     freeFileData(fsfd);
 
     int progId = glCreateProgram();
-    checkGLError(hOut, "program creation");
+    checkGLError("program creation");
     glAttachShader(progId, vs);
-    checkGLError(hOut, "vertex shader attachment");
+    checkGLError("vertex shader attachment");
     glAttachShader(progId, fs);
-    checkGLError(hOut, "fragment shader attachment");
+    checkGLError("fragment shader attachment");
     glLinkProgram(progId);
-    checkGLError(hOut, "program linking");
+    checkGLError("program linking");
     //glGetProgramInfoLog(progId, ERROR_BUFFER_SIZE, &actualLength, errorBuffer);
     if (actualLength > 0) {
-        print(hOut, errorBuffer);
+        print(errorBuffer);
     }
 
     glDetachShader(progId, vs);
-    checkGLError(hOut, "vertex shader detachment");
+    checkGLError("vertex shader detachment");
     glDetachShader(progId, fs);
-    checkGLError(hOut, "fragment shader detachment");
+    checkGLError("fragment shader detachment");
     glDeleteShader(vs);
-    checkGLError(hOut, "vertex shader deletion");
+    checkGLError("vertex shader deletion");
     glDeleteShader(fs);
-    checkGLError(hOut, "fragment shader deletion");
+    checkGLError("fragment shader deletion");
 
     return progId;
 }

@@ -32,10 +32,10 @@ mat4 rotateZ(float);
 
 mat4 fromPositionAndRotation(vec3, vec3);
 
-void getPerspectiveMatrix(HANDLE hOut, mat4*, float, float, float, float);
+void getPerspectiveMatrix(mat4*, float, float, float, float);
 
 float* getVals(mat4);
 
-void printMat(HANDLE, mat4);
+void printMat(mat4);
 
-void printVec3(HANDLE, vec3);
+void printVec3(vec3);

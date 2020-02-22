@@ -30,6 +30,6 @@ PFNGLGETUNIFORMLOCATIONPROC glGetUniformLocation;
 
 int initialized;
 
-void GLEInit(HANDLE);
+void GLEInit();
 
-void checkGLError(HANDLE, char*);
+void checkGLError(char*);

@@ -17,6 +17,6 @@ typedef struct color {
 
 
 void updateSize(int width, int height);
-void frameTick(HANDLE, HWND);
-void display(HANDLE, HDC, HWND);
+void frameTick(HWND);
+void display(HDC, HWND);
 void init();

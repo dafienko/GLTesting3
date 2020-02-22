@@ -66,9 +66,9 @@ int WINAPI WinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,LPSTR lpCmdLine,i
 
     EnableOpenGL(hwnd, &hDC, &hRC);
 
-    GLEInit(hOut);
+    GLEInit();
 
-    init(hOut);
+    init();
     updateSize(baseWidth, baseHeight);
 
 
@@ -86,7 +86,7 @@ int WINAPI WinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,LPSTR lpCmdLine,i
                 DispatchMessage(&msg);
             }
         } else {
-            display(hOut, hDC, hwnd);
+            display(hDC, hwnd);
         }
     }
 
@@ -132,7 +132,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             hDC = BeginPaint(hwnd, &ps);
 
             if (initialized) {
-                display(hOut, hDC, hwnd);
+                display(hDC, hwnd);
             }
 
             EndPaint(hwnd, &ps);

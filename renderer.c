@@ -34,9 +34,9 @@ GLint projLoc, mvLoc;
 
 
 int displayEnabled = 1; // for use with debugging shaders
-void display(HANDLE hOut, HDC hdc, HWND hWnd) {  //display function
+void display(HDC hdc, HWND hWnd) {  //display function
     if (displayEnabled) {
-        frameTick(hOut, hWnd);
+        frameTick(hWnd);
 
         glClearColor(0.0f, 1.0f, 0.0f, 0.0f);
         glClear(GL_COLOR_BUFFER_BIT);
@@ -72,13 +72,7 @@ void display(HANDLE hOut, HDC hdc, HWND hWnd) {  //display function
     }
 }
 
-/**
-@param hOut
-handle to output window
-**/
-HANDLE out = 0;
-
-void init(HANDLE hOut) {
+void init() {
     m = calloc(1, sizeof(model));
     m->verts = verts;
 
@@ -89,34 +83,33 @@ void init(HANDLE hOut) {
     *(m->rotation) = (vec3){0, rad(-30), 0};
 
     wglSwapIntervalEXT(0);
-    out = hOut;
 
-    bp = createBasicProgram(hOut);
+    bp = createBasicProgram();
 
     glGenVertexArrays(1, &vaoId);
-    checkGLError(hOut, "glGenVertexArrays");
+    checkGLError("glGenVertexArrays");
 
     glBindVertexArray(vaoId);
-    checkGLError(hOut, "glBindVertexArray");
+    checkGLError("glBindVertexArray");
 
     glGenBuffers(1, &vboId);
-    checkGLError(hOut, "glGenBuffers");
+    checkGLError("glGenBuffers");
 
     glBindBuffer(GL_ARRAY_BUFFER, vboId);
-    checkGLError(hOut, "glBindBuffer");
+    checkGLError("glBindBuffer");
 
     glBufferData(GL_ARRAY_BUFFER, sizeof(verts), verts, GL_STATIC_DRAW);
-    checkGLError(hOut, "glBufferData");
+    checkGLError("glBufferData");
 
     const char* v = (const char*)glGetString(GL_VERSION);
-    print(hOut, "version: %s\n", v);
+    print("version: %s\n", v);
 }
 
 void updateSize(int w, int h) {
-    getPerspectiveMatrix(out, &perspectiveMat, 70.0, (double)w/(double)h, 1, 100);
+    getPerspectiveMatrix(&perspectiveMat, 70.0, (double)w/(double)h, 1, 100);
 }
 
-void frameTick(HANDLE hOut, HWND hWnd) {
+void frameTick(HWND hWnd) {
     int ms = GetTickCount();
     int dt = ms - lastFrameTime;
     if (dt < 0) {
