@@ -41,6 +41,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="fileUtil.h" />
+		<Unit filename="game.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="game.h" />
 		<Unit filename="glExtensions.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -50,9 +54,17 @@
 		</Unit>
 		<Unit filename="glMath.h" />
 		<Unit filename="glext.h" />
+		<Unit filename="keyboard.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="keyboard.h" />
 		<Unit filename="main.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="mouse.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mouse.h" />
 		<Unit filename="renderer.c">
 			<Option compilerVar="CC" />
 		</Unit>

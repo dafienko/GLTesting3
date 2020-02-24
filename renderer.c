@@ -84,6 +84,7 @@ void display(CAMERA* c, HDC hdc, HWND hWnd) {  //display function
         int ms = frameTick(hWnd);
         float dt = ms / 1000.0;
         updateFrame(dt);
+
         timeSincePhysicsUpdate += ms;
         if (timeSincePhysicsUpdate >= timeBetweenPhysicsUpdates) {
             timeSincePhysicsUpdate -= timeBetweenPhysicsUpdates;

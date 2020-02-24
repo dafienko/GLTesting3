@@ -9,6 +9,7 @@
 #include "glExtensions.h"
 #include "keyboard.h"
 #include "game.h"
+#include "mouse.h"
 
 LRESULT CALLBACK WindowProc(HWND, UINT, WPARAM, LPARAM);
 void EnableOpenGL(HWND hwnd, HDC*, HGLRC*);
@@ -100,13 +101,12 @@ int WINAPI WinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,LPSTR lpCmdLine,i
     return msg.wParam;
 }
 
-float sensitivity = .1;
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     static HDC hDC;
     static PAINTSTRUCT ps;
     static RECT rect;
-    static int lastMouseDown = 0;
+    static int trackMouse = 0;
     static int lastX = 0;
     static int lastY = 0;
 
@@ -120,7 +120,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             return 0;
 
         case WM_MOUSEMOVE:
-            if (wParam == MK_RBUTTON) {
+            if (mouseLocked) {
                 GetWindowRect(hwnd, &rect);
 
                 int x = LOWORD(lParam);
@@ -128,28 +128,19 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
                 int dx, dy;
 
-                if (lastMouseDown) {
+                if (trackMouse) {
                     dx = x - lastX;
                     dy = y - lastY;
-                    camera->rotation->x += rad(-dy * sensitivity);
-                    camera->rotation->y += rad(-dx * sensitivity);
+                    addMouseDelta(dx, dy);
 
-                    camera->rotation->x = min(max(camera->rotation->x, rad(-80)), rad(80));
-                    lastMouseDown = 0;
+                    trackMouse = 0;
                     SetCursorPos((rect.left + rect.right)/2, (rect.top + rect.bottom)/2);
                 } else {
                     lastX = x; lastY = y;
-                    lastMouseDown = 1;
+                    trackMouse = 1;
                 }
-            } else {
-                lastMouseDown = 0;
             }
-            break;
-        case WM_RBUTTONDOWN:
-            ShowCursor(FALSE);
-            break;
-        case WM_RBUTTONUP:
-            ShowCursor(TRUE);
+
             break;
         case WM_KEYDOWN:
             keyDown(wParam);
@@ -157,8 +148,16 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             switch (wParam)
             {
                 case VK_ESCAPE:
-                    PostQuitMessage(0);
+                    if (mouseLocked) {
+                        showMouse();
+                        unlockMouse();
+                    } else {
+                        trackMouse = 0;
+                        hideMouse();
+                        lockMouse();
+                    }
                     break;
+
             }
 
             break;
@@ -174,7 +173,6 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             glViewport (0, 0, width, height);
 
             GetWindowRect(hwnd, &rect);
-            //ClipCursor(&rect);
 
             hDC = BeginPaint(hwnd, &ps);
 

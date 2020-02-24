@@ -1,3 +1,5 @@
+#pragma once
+
 #include <windows.h>
 #include "glext.h"
 #include "wglext.h"

@@ -1,6 +1,11 @@
+#pragma once
+
 #include "consoleUtil.h"
 #define PI 3.14159265359
 
+typedef struct vec2 {
+    float x, y;
+} vec2;
 
 typedef struct m4 {
     float a, b, c, d,

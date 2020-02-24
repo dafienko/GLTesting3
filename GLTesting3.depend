@@ -95,7 +95,7 @@
 	<stdarg.h>
 	"consoleUtil.h"
 
-1582336301 d:\codeblocksworkspace\gltesting3\consoleutil.h
+1582509893 d:\codeblocksworkspace\gltesting3\consoleutil.h
 	<windows.h>
 	<stdarg.h>
 
@@ -107,7 +107,7 @@
 	"fileUtil.h"
 	"consoleUtil.h"
 
-1582336397 d:\codeblocksworkspace\gltesting3\fileutil.h
+1582509897 d:\codeblocksworkspace\gltesting3\fileutil.h
 	<stdio.h>
 
 1582336205 source:d:\codeblocksworkspace\gltesting3\glextensions.c
@@ -116,7 +116,7 @@
 	<gl/gl.h>
 	"consoleUtil.h"
 
-1582336206 d:\codeblocksworkspace\gltesting3\glextensions.h
+1582509913 d:\codeblocksworkspace\gltesting3\glextensions.h
 	<windows.h>
 	"glext.h"
 	"wglext.h"
@@ -126,7 +126,7 @@
 	<windows.h>
 	<KHR/khrplatform.h>
 
-1582352330 source:d:\codeblocksworkspace\gltesting3\main.c
+1582510990 source:d:\codeblocksworkspace\gltesting3\main.c
 	<stdio.h>
 	<windows.h>
 	<gl/gl.h>
@@ -137,14 +137,15 @@
 	"glExtensions.h"
 	"keyboard.h"
 	"game.h"
+	"mouse.h"
 
-1582336380 d:\codeblocksworkspace\gltesting3\shaderutil.h
+1582509941 d:\codeblocksworkspace\gltesting3\shaderutil.h
 
-1582348513 d:\codeblocksworkspace\gltesting3\renderer.h
+1582509935 d:\codeblocksworkspace\gltesting3\renderer.h
 	<windows.h>
 	"glMath.h"
 
-1582351271 source:d:\codeblocksworkspace\gltesting3\renderer.c
+1582511109 source:d:\codeblocksworkspace\gltesting3\renderer.c
 	<stdio.h>
 	<windows.h>
 	<sys/timeb.h>
@@ -192,22 +193,31 @@
 	<stdio.h>
 	"consoleUtil.h"
 
-1582350294 d:\codeblocksworkspace\gltesting3\glmath.h
+1582509839 d:\codeblocksworkspace\gltesting3\glmath.h
 	"consoleUtil.h"
 
-1582351076 source:d:\codeblocksworkspace\gltesting3\game.c
+1582510851 source:d:\codeblocksworkspace\gltesting3\game.c
 	<windows.h>
 	<math.h>
+	"glMath.h"
 	"game.h"
 	"keyboard.h"
 	"renderer.h"
 	"consoleUtil.h"
+	"mouse.h"
 
-1582341573 d:\codeblocksworkspace\gltesting3\game.h
+1582509902 d:\codeblocksworkspace\gltesting3\game.h
 
-1582343741 d:\codeblocksworkspace\gltesting3\keyboard.h
+1582509922 d:\codeblocksworkspace\gltesting3\keyboard.h
 
 1582344139 source:d:\codeblocksworkspace\gltesting3\keyboard.c
 	<windows.h>
 	"keyboard.h"
+
+1582510819 source:d:\codeblocksworkspace\gltesting3\mouse.c
+	"mouse.h"
+	"windows.h"
+
+1582510389 d:\codeblocksworkspace\gltesting3\mouse.h
+	"glMath.h"
 

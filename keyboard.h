@@ -1,3 +1,6 @@
+#pragma once
+
+
 int* keysDown;
 
 void initKeyboard();

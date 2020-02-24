@@ -1,17 +1,31 @@
 #include <windows.h>
 #include <math.h>
 
+#include "glMath.h"
 #include "game.h"
 #include "keyboard.h"
 #include "renderer.h"
 #include "consoleUtil.h"
+#include "mouse.h"
 
 void initGame() {
-
+    lockMouse();
+    hideMouse();
 }
 
-void updateFrame(float dt) {
+float sensitivity = .2;
 
+void updateFrame(float dt) {
+    vec2 delta = getMouseDelta();
+    float dx = delta.x;
+    float dy = delta.y;
+
+    clearMouseDelta();
+
+    camera->rotation->x += rad(-dy * sensitivity);
+    camera->rotation->y += rad(-dx * sensitivity);
+
+    camera->rotation->x = min(max(camera->rotation->x, rad(-80)), rad(80));
 }
 
 float speed = .00002;
