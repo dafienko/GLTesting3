@@ -1,6 +1,6 @@
 #pragma once
 
-#include <windows.h>
+#include "ghettoWin.h"
 #include "glext.h"
 #include "wglext.h"
 

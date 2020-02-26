@@ -1,4 +1,4 @@
-#include <windows.h>
+#include "ghettoWin.h"
 #include "keyboard.h"
 
 #define kbdBufferSize 50

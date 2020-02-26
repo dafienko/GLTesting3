@@ -1,7 +1,8 @@
-#include <windows.h>
+#include "ghettoWin.h"
 #include <string.h>
 #include <stdio.h>
 #include <stdarg.h>
+#include <stdlib.h>
 
 #include "consoleUtil.h"
 

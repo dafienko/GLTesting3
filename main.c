@@ -1,5 +1,6 @@
 #include <stdio.h>
-#include <windows.h>
+#include "ghettoWin.h"
+#include <winuser.h>
 #include <gl/gl.h>
 
 #include "shaderUtil.h"
@@ -11,8 +12,20 @@
 #include "game.h"
 #include "mouse.h"
 
+
+// mouse input bullcrap
+#ifndef HID_USAGE_PAGE_GENERIC
+#define HID_USAGE_PAGE_GENERIC         ((USHORT) 0x01)
+#endif
+#ifndef HID_USAGE_GENERIC_MOUSE
+#define HID_USAGE_GENERIC_MOUSE        ((USHORT) 0x02)
+#endif
+
+
+
+LRESULT MouseProc(int nCode, WPARAM wParam, LPARAM lParam);
 LRESULT CALLBACK WindowProc(HWND, UINT, WPARAM, LPARAM);
-void EnableOpenGL(HWND hwnd, HDC*, HGLRC*);
+void EnableOpenGL(HWND hWnd, HDC*, HGLRC*);
 void DisableOpenGL(HWND, HDC, HGLRC);
 
 const int baseWidth = 800;
@@ -20,11 +33,13 @@ const int baseHeight = 600;
 
 HGLRC hRC = NULL;
 
+RAWINPUTDEVICE Rid[1];
+
 int WINAPI WinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,LPSTR lpCmdLine,int nCmdShow)
 {
     WNDCLASSEX wcex;
-    HWND hwnd;
-    HDC hDC;
+    HWND hWnd;
+    HDC hdc;
     MSG msg;
     BOOL bQuit = FALSE;
 
@@ -45,7 +60,7 @@ int WINAPI WinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,LPSTR lpCmdLine,i
     if (!RegisterClassEx(&wcex))
         return 0;
 
-    hwnd = CreateWindowEx(0,
+    hWnd = CreateWindowEx(0,
                           "GLSample",
                           "OpenGL Sample",
                           WS_OVERLAPPEDWINDOW,
@@ -59,12 +74,22 @@ int WINAPI WinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,LPSTR lpCmdLine,i
                           NULL);
 
 
+    // hid mouse setup
+    Rid[0].usUsagePage = HID_USAGE_PAGE_GENERIC;
+    Rid[0].usUsage = HID_USAGE_GENERIC_MOUSE;
+    Rid[0].dwFlags = RIDEV_INPUTSINK;
+    Rid[0].hwndTarget = hWnd;
+    RegisterRawInputDevices(Rid, 1, sizeof(Rid[0]));
+
+
     AllocConsole();
     setHandle(GetStdHandle(STD_OUTPUT_HANDLE));
 
-    ShowWindow(hwnd, TRUE);
+    SetWindowsHookEx(WH_MOUSE, (HOOKPROC)MouseProc, NULL, 0);
 
-    EnableOpenGL(hwnd, &hDC, &hRC);
+    ShowWindow(hWnd, TRUE);
+
+    EnableOpenGL(hWnd, &hdc, &hRC);
 
     GLEInit();
     initKeyboard();
@@ -89,29 +114,47 @@ int WINAPI WinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,LPSTR lpCmdLine,i
             }
         } else {
             swapKbdBuffer();
-            display(camera, hDC, hwnd);
+            display(camera, hdc, hWnd);
         }
     }
 
-    DisableOpenGL(hwnd, hDC, hRC);
+    DisableOpenGL(hWnd, hdc, hRC);
 
-    DestroyWindow(hwnd);
+    DestroyWindow(hWnd);
     FreeConsole();
 
     return msg.wParam;
 }
 
-LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-    static HDC hDC;
+    static HDC hdc;
     static PAINTSTRUCT ps;
     static RECT rect;
     static int trackMouse = 0;
-    static int lastX = 0;
-    static int lastY = 0;
 
     switch (uMsg)
     {
+        case WM_INPUT:
+            if (mouseLocked) {
+                UINT dwSize = 40;
+                static BYTE lpb[40];
+
+                GetRawInputData((HRAWINPUT)lParam, RID_INPUT,
+                                lpb, &dwSize, sizeof(RAWINPUTHEADER));
+
+                RAWINPUT* raw = (RAWINPUT*)lpb;
+
+                if (raw->header.dwType == RIM_TYPEMOUSE)
+                {
+                    int xPosRelative = raw->data.mouse.lLastX;
+                    int yPosRelative = raw->data.mouse.lLastY;
+                    addMouseDelta(xPosRelative, yPosRelative);
+
+                }
+            }
+            break;
+
         case WM_CLOSE:
             PostQuitMessage(0);
             break;
@@ -121,22 +164,10 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
         case WM_MOUSEMOVE:
             if (mouseLocked) {
-                GetWindowRect(hwnd, &rect);
-
-                int x = LOWORD(lParam);
-                int y = HIWORD(lParam);
-
-                int dx, dy;
-
+                GetWindowRect(hWnd, &rect);
                 if (trackMouse) {
-                    dx = x - lastX;
-                    dy = y - lastY;
-                    addMouseDelta(dx, dy);
-
-                    trackMouse = 0;
                     SetCursorPos((rect.left + rect.right)/2, (rect.top + rect.bottom)/2);
                 } else {
-                    lastX = x; lastY = y;
                     trackMouse = 1;
                 }
             }
@@ -172,31 +203,30 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             updateSize(width, height);
             glViewport (0, 0, width, height);
 
-            GetWindowRect(hwnd, &rect);
+            GetWindowRect(hWnd, &rect);
 
-            hDC = BeginPaint(hwnd, &ps);
+            hdc = BeginPaint(hWnd, &ps);
 
             if (initialized) {
-                display(camera, hDC, hwnd);
+                display(camera, hdc, hWnd);
             }
 
-            EndPaint(hwnd, &ps);
+            EndPaint(hWnd, &ps);
             break;
         default:
-            return DefWindowProc(hwnd, uMsg, wParam, lParam);
+            return DefWindowProc(hWnd, uMsg, wParam, lParam);
     }
 
     return 0;
 }
 
-void EnableOpenGL(HWND hwnd, HDC* hDC, HGLRC* hRC)
+void EnableOpenGL(HWND hWnd, HDC* hdc, HGLRC* hRC)
 {
     PIXELFORMATDESCRIPTOR pfd;
 
     int iFormat;
 
-    /* get the device context (DC) */
-    *hDC = GetDC(hwnd);
+    *hdc = GetDC(hWnd);
 
     /* set the pixel format for the DC */
     ZeroMemory(&pfd, sizeof(pfd));
@@ -210,20 +240,28 @@ void EnableOpenGL(HWND hwnd, HDC* hDC, HGLRC* hRC)
     pfd.cDepthBits = 16;
     pfd.iLayerType = PFD_MAIN_PLANE;
 
-    iFormat = ChoosePixelFormat(*hDC, &pfd);
+    iFormat = ChoosePixelFormat(*hdc, &pfd);
 
-    SetPixelFormat(*hDC, iFormat, &pfd);
+    SetPixelFormat(*hdc, iFormat, &pfd);
 
     /* create and enable the render context (RC) */
-    *hRC = wglCreateContext(*hDC);
+    *hRC = wglCreateContext(*hdc);
 
-    wglMakeCurrent(*hDC, *hRC);
+    wglMakeCurrent(*hdc, *hRC);
 }
 
-void DisableOpenGL (HWND hwnd, HDC hDC, HGLRC hRC)
+void DisableOpenGL (HWND hWnd, HDC hdc, HGLRC hRC)
 {
     wglMakeCurrent(NULL, NULL);
     wglDeleteContext(hRC);
-    ReleaseDC(hwnd, hDC);
+    ReleaseDC(hWnd, hdc);
+}
+
+LRESULT MouseProc(int nCode, WPARAM wParam, LPARAM lParam) {
+    if (wParam == WM_MOUSEMOVE) {
+
+    }
+
+    return CallNextHookEx(NULL, nCode, wParam, lParam);
 }
 

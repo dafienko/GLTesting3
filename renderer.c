@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include <windows.h>
+#include "ghettoWin.h"
 #include <sys/timeb.h>
 #include <time.h>
 #include <gl/gl.h>
@@ -14,10 +14,6 @@
 GLuint bp = 0;
 GLuint vboId = 0;
 GLuint vaoId = 0;
-int framesSinceLastUpdate = 0;
-int lastMs = 0;
-int lastFrameTime = 0;
-int fps = 0;
 
 //uniforms
 GLint projLoc, mvLoc;
@@ -76,19 +72,21 @@ MESH* m;
 };
 
 int timeSincePhysicsUpdate = 0;
-const int timeBetweenPhysicsUpdates = 50; // milliseconds
+const int timeBetweenPhysicsUpdates = 10; // milliseconds
+float dtMs;
+int ms;
 
 int displayEnabled = 1; // for use with debugging shaders
 void display(CAMERA* c, HDC hdc, HWND hWnd) {  //display function
     if (displayEnabled) {
-        int ms = frameTick(hWnd);
-        float dt = ms / 1000.0;
-        updateFrame(dt);
+        ms = frameTick(hWnd);
+        dtMs = ms / 1000.0;
+        updateFrame(dtMs);
 
         timeSincePhysicsUpdate += ms;
-        if (timeSincePhysicsUpdate >= timeBetweenPhysicsUpdates) {
+        while (timeSincePhysicsUpdate >= timeBetweenPhysicsUpdates) {
             timeSincePhysicsUpdate -= timeBetweenPhysicsUpdates;
-            updateGame(timeBetweenPhysicsUpdates);
+            updateGame(timeBetweenPhysicsUpdates/1000.0);
         }
 
         glEnable(GL_CULL_FACE);
@@ -174,25 +172,31 @@ void updateSize(int w, int h) {
     getPerspectiveMatrix(&perspectiveMat, 70.0, (double)w/(double)h, .1, 100);
 }
 
+int lastTime = 0, dt = 0, timeSinceLastFrameUpdate = 0, lastFrameTime = 0, fps = 0, framesSinceLastUpdate = 0;
+char windowText[12];
+
 int frameTick(HWND hWnd) {
-    int ms = GetTickCount();
-    int dt = ms - lastFrameTime;
-    if (dt < 0) {
+    if (lastTime == 0) { // first run through
         lastFrameTime = GetTickCount();
+        lastTime = GetTickCount();
         return 0;
     }
+
+    ms = GetTickCount();
+    dt = ms - lastTime;
+    lastTime = ms;
+
     framesSinceLastUpdate++;
 
-    if (dt > 1000) {
+    timeSinceLastFrameUpdate = ms - lastFrameTime;
+    if (timeSinceLastFrameUpdate > 1000) {
         lastFrameTime = ms;
-        fps = (1000 * framesSinceLastUpdate)/(dt);
+        fps = (1000 * framesSinceLastUpdate)/(timeSinceLastFrameUpdate);
 
-        char windowText[10];
         sprintf(windowText, "%i FPS", fps);
         SetWindowText(hWnd, TEXT(windowText));
 
         framesSinceLastUpdate = 0;
-
     }
 
     return dt;

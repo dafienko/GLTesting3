@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include <windows.h>
+#include "ghettoWin.h"
 #include <gl/gl.h>
 
 #include "glExtensions.h"

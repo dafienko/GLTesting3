@@ -1,4 +1,4 @@
-#include <windows.h>
+#include "ghettoWin.h"
 #include <math.h>
 
 #include "glMath.h"
@@ -28,7 +28,7 @@ void updateFrame(float dt) {
     camera->rotation->x = min(max(camera->rotation->x, rad(-80)), rad(80));
 }
 
-float speed = .00002;
+float speed = 1.8;
 void updateGame(float dt) {
     ;
     float xDir = 0;
@@ -83,18 +83,18 @@ void updateGame(float dt) {
     *(camera->position) = addVec3(pos, movementVector);
 
     if (isKeyDown(VK_UP)) {
-        camera->rotation->x += dt * .00001;
+        camera->rotation->x += dt * sensitivity * 10;
     }
     if (isKeyDown(VK_DOWN)) {
-        camera->rotation->x += dt * -.00001;
+        camera->rotation->x += dt * -sensitivity * 10;
     }
     camera->rotation->x = min(max(camera->rotation->x, rad(-80)), rad(80));
 
     if (isKeyDown(VK_RIGHT)) {
-        camera->rotation->y += dt * -.00001;
+        camera->rotation->y += dt * -sensitivity * 10;
     }
     if (isKeyDown(VK_LEFT)) {
-        camera->rotation->y += dt * .00001;
+        camera->rotation->y += dt * sensitivity * 10;
     }
 
 

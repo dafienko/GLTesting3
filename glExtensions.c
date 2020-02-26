@@ -1,6 +1,6 @@
 #include "glExtensions.h"
 
-#include <windows.h>
+#include "ghettoWin.h"
 #include <gl/gl.h>
 #include "consoleUtil.h"
 

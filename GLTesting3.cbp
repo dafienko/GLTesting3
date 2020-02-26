@@ -32,6 +32,7 @@
 			<Add library="opengl32" />
 			<Add library="glu32" />
 			<Add library="gdi32" />
+			<Add library="user32" />
 		</Linker>
 		<Unit filename="consoleUtil.c">
 			<Option compilerVar="CC" />

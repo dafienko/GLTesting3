@@ -1,7 +1,7 @@
 #pragma once
 
 
-#include <windows.h>
+#include "ghettoWin.h"
 #include <stdarg.h>
 
 
