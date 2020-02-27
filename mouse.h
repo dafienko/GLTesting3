@@ -4,6 +4,7 @@
 
 int mouseLocked;
 
+void initMouse(HANDLE);
 void lockMouse();
 void unlockMouse();
 void hideMouse();

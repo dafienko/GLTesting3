@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1582747473 source:c:\users\dafie\desktop\codeblocksworkspace\gltesting3\main.c
+1582827129 source:c:\users\dafie\desktop\codeblocksworkspace\gltesting3\main.c
 	<stdio.h>
 	"ghettoWin.h"
 	<winuser.h>
@@ -227,7 +227,7 @@
 1582510389 d:\codeblocksworkspace\gltesting3\mouse.h
 	"glMath.h"
 
-1582749507 source:c:\users\dafie\desktop\codeblocksworkspace\gltesting3\game.c
+1582749934 source:c:\users\dafie\desktop\codeblocksworkspace\gltesting3\game.c
 	"ghettoWin.h"
 	<math.h>
 	"glMath.h"
@@ -241,14 +241,14 @@
 
 1582549520 c:\users\dafie\desktop\codeblocksworkspace\gltesting3\keyboard.h
 
-1582549520 c:\users\dafie\desktop\codeblocksworkspace\gltesting3\mouse.h
+1582827111 c:\users\dafie\desktop\codeblocksworkspace\gltesting3\mouse.h
 	"glMath.h"
 
 1582745409 source:c:\users\dafie\desktop\codeblocksworkspace\gltesting3\keyboard.c
 	"ghettoWin.h"
 	"keyboard.h"
 
-1582549520 source:c:\users\dafie\desktop\codeblocksworkspace\gltesting3\mouse.c
+1582827108 source:c:\users\dafie\desktop\codeblocksworkspace\gltesting3\mouse.c
 	"mouse.h"
 	"windows.h"
 

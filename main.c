@@ -92,6 +92,7 @@ int WINAPI WinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,LPSTR lpCmdLine,i
     EnableOpenGL(hWnd, &hdc, &hRC);
 
     GLEInit();
+    initMouse(hWnd);
     initKeyboard();
     initRenderer();
 
