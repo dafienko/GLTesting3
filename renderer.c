@@ -13,7 +13,7 @@
 #include "game.h"
 
 GLuint bp = 0;
-GLuint vboId = 0;
+GLuint vboId[2];
 GLuint vaoId = 0;
 
 //uniforms
@@ -23,59 +23,61 @@ MESH* m;
 #define tPos 1
 #define yOff 1
 
- GLfloat verts[] = { //ccw = outward normal
-            //back face
-            tPos, tPos, -tPos,
-            tPos, -tPos, -tPos,
-            -tPos, -tPos,-tPos,
-            tPos, tPos, -tPos,
-            -tPos, -tPos, -tPos,
-            -tPos, tPos, -tPos,
+//ccw = outward normal
+ vec3 verts[] = { //back face
+            {tPos, tPos, -tPos},
+            {tPos, -tPos, -tPos},
+            {-tPos, -tPos,-tPos},
+            {tPos, tPos, -tPos},
+            {-tPos, -tPos, -tPos},
+            {-tPos, tPos, -tPos},
 
             //front face
-            tPos, tPos, tPos,
-            -tPos, -tPos,tPos,
-            tPos, -tPos, tPos,
-            tPos, tPos, tPos,
-            -tPos, tPos, tPos,
-            -tPos, -tPos, tPos,
+            {tPos, tPos, tPos},
+            {-tPos, -tPos,tPos},
+            {tPos, -tPos, tPos},
+            {tPos, tPos, tPos},
+            {-tPos, tPos, tPos},
+            {-tPos, -tPos, tPos},
 
             //right face
-            tPos, tPos, tPos,
-            tPos, -tPos, tPos,
-            tPos, -tPos, -tPos,
-            tPos, tPos, tPos,
-            tPos, -tPos, -tPos,
-            tPos, tPos, -tPos,
+            {tPos, tPos, tPos},
+            {tPos, -tPos, tPos},
+            {tPos, -tPos, -tPos},
+            {tPos, tPos, tPos},
+            {tPos, -tPos, -tPos},
+            {tPos, tPos, -tPos},
 
             //left face
-            -tPos, tPos, tPos,
-            -tPos, -tPos, -tPos,
-            -tPos, -tPos, tPos,
-            -tPos, tPos, tPos,
-            -tPos, tPos, -tPos,
-            -tPos, -tPos, -tPos,
+            {-tPos, tPos, tPos},
+            {-tPos, -tPos, -tPos},
+            {-tPos, -tPos, tPos},
+            {-tPos, tPos, tPos},
+            {-tPos, tPos, -tPos},
+            {-tPos, -tPos, -tPos},
 
             //top face
-            -tPos, tPos, -tPos,
-            -tPos, tPos, tPos,
-            tPos, tPos, tPos,
-            -tPos, tPos, -tPos,
-            tPos, tPos, tPos,
-            tPos, tPos, -tPos,
+            {-tPos, tPos, -tPos},
+            {-tPos, tPos, tPos},
+            {tPos, tPos, tPos},
+            {-tPos, tPos, -tPos},
+            {tPos, tPos, tPos},
+            {tPos, tPos, -tPos},
 
-            -tPos, -tPos, -tPos,
-            tPos, -tPos, tPos,
-            -tPos, -tPos, tPos,
-            -tPos, -tPos, -tPos,
-            tPos, -tPos, -tPos,
-            tPos, -tPos, tPos,
+            {-tPos, -tPos, -tPos},
+            {tPos, -tPos, tPos},
+            {-tPos, -tPos, tPos},
+            {-tPos, -tPos, -tPos},
+            {tPos, -tPos, -tPos},
+            {tPos, -tPos, tPos}
 };
 
 int timeSincePhysicsUpdate = 0;
 const int timeBetweenPhysicsUpdates = 10; // milliseconds
 float dtMs;
 int ms;
+
+MESH* monkey;
 
 int displayEnabled = 1; // for use with debugging shaders
 void display(CAMERA* c, HDC hdc, HWND hWnd) {  //display function
@@ -116,13 +118,14 @@ void display(CAMERA* c, HDC hdc, HWND hWnd) {  //display function
         free(vals);
 
         glBindVertexArray(vaoId);
-        glBindBuffer(GL_ARRAY_BUFFER, vboId);
+        glBindBuffer(GL_ARRAY_BUFFER, vboId[0]);
 
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
         glEnableVertexAttribArray(0);
 
         glPointSize(30);
-        glDrawArrays(GL_TRIANGLES, 0, (sizeof(verts) / sizeof(verts[0])) / 3);
+        //glDrawArrays(GL_TRIANGLES, 0, (sizeof(verts) / sizeof(verts[0])));
+        glDrawArrays(GL_TRIANGLES, 0, monkey->numVerts);
 
 
         SwapBuffers(hdc);
@@ -130,6 +133,8 @@ void display(CAMERA* c, HDC hdc, HWND hWnd) {  //display function
 }
 
 void initRenderer() {
+    monkey = getMeshData("assets/models/monkeyTri.obj");
+
     camera = calloc(1, sizeof(CAMERA));
     (camera->position) = calloc(1, sizeof(vec3));
     *(camera->position) = (vec3){0, 0, 0};
@@ -146,7 +151,7 @@ void initRenderer() {
     (m->rotation) = calloc(1, sizeof(vec3));
     *(m->rotation) = (vec3){0, 0, 0};
 
-    wglSwapIntervalEXT(1);
+    wglSwapIntervalEXT(0);
 
     bp = createBasicProgram();
 
@@ -156,14 +161,16 @@ void initRenderer() {
     glBindVertexArray(vaoId);
     checkGLError("glBindVertexArray");
 
-    glGenBuffers(1, &vboId);
+    glGenBuffers(2, vboId);
     checkGLError("glGenBuffers");
 
-    glBindBuffer(GL_ARRAY_BUFFER, vboId);
+    glBindBuffer(GL_ARRAY_BUFFER, vboId[0]);
     checkGLError("glBindBuffer");
 
-    glBufferData(GL_ARRAY_BUFFER, sizeof(verts), verts, GL_STATIC_DRAW);
+    //glBufferData(GL_ARRAY_BUFFER, sizeof(verts), erts, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, monkey->numVerts * sizeof(float) * 3, monkey->verts, GL_STATIC_DRAW);
     checkGLError("glBufferData");
+    print("%i\n", monkey->numVerts);
 
     const char* v = (const char*)glGetString(GL_VERSION);
     print("version: %s\n", v);

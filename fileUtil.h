@@ -4,9 +4,14 @@
 #include "glMath.h"
 
 typedef struct mesh {
-    float* verts;
+    vec3* verts;
+    vec3* normals;
+    vec2* texCoords;
+    int* faces;
     vec3* rotation;
     vec3* position;
+    int numVerts;
+    int numFaces;
 } MESH;
 
 typedef struct {
@@ -15,6 +20,7 @@ typedef struct {
     int* lengths;
 } FILEDATA;
 
+char** strsplit(const char*, const char*); // returns an array of strings by splitting the first string by the second string
 int getFileLength(FILE*); //returns the number of lines in the file
 FILEDATA* getFileData(FILE*); // returns the lines in the file as an array of strings
 FILE* getFile(const char*); //loads the file based on the given filename
