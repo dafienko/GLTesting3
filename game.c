@@ -32,7 +32,7 @@ void updateFrame(float dt) {
     camera->rotation->x = min(max(camera->rotation->x, rad(-80)), rad(80));
 }
 
-float speed = 4;
+float speed = 6;
 void updateGame(float dt) {
     ;
     float xDir = 0;

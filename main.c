@@ -94,8 +94,9 @@ int WINAPI WinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,LPSTR lpCmdLine,i
     GLEInit();
     initMouse(hWnd);
     initKeyboard();
+    print("initializing renderer\n");
     initRenderer();
-
+    print("done initializing renderer\n");
     updateSize(baseWidth, baseHeight);
 
     initGame();
@@ -104,6 +105,7 @@ int WINAPI WinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,LPSTR lpCmdLine,i
     {
         if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
         {
+            //print("message\n");
             if (msg.message == WM_QUIT)
             {
                 bQuit = TRUE;
@@ -114,6 +116,7 @@ int WINAPI WinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,LPSTR lpCmdLine,i
                 DispatchMessage(&msg);
             }
         } else {
+            //print("display\n");
             swapKbdBuffer();
             display(camera, hdc, hWnd);
         }
@@ -183,10 +186,11 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
                     if (mouseLocked) {
                         showMouse();
                         unlockMouse();
-                    } else {
                         trackMouse = 0;
+                    } else {
                         hideMouse();
                         lockMouse();
+                        trackMouse = 0;
                     }
                     break;
 

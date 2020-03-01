@@ -12,6 +12,8 @@ typedef struct mesh {
     vec3* position;
     int numVerts;
     int numFaces;
+    vec3* vertsOrdered;
+    vec3* normalsOrdered;
 } MESH;
 
 typedef struct {

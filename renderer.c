@@ -17,7 +17,7 @@ GLuint vboId[2];
 GLuint vaoId = 0;
 
 //uniforms
-GLint projLoc, mvLoc;
+GLint projLoc, mvLoc, camposLoc, modelposLoc;
 MESH* m;
 
 #define tPos 1
@@ -93,6 +93,10 @@ void display(CAMERA* c, HDC hdc, HWND hWnd) {  //display function
         }
 
         glEnable(GL_CULL_FACE);
+        glCullFace(GL_BACK);
+        glEnable(GL_DEPTH_TEST);
+        glDepthFunc(GL_LESS);
+
         float col = .15f;
         glClearColor(col, col, col, 0.0f);
         glClear(GL_COLOR_BUFFER_BIT);
@@ -100,6 +104,8 @@ void display(CAMERA* c, HDC hdc, HWND hWnd) {  //display function
 
         projLoc = glGetUniformLocation(bp, "proj_matrix");
         mvLoc = glGetUniformLocation(bp, "mv_matrix");
+        camposLoc = glGetUniformLocation(bp, "cameraPos");
+        modelposLoc = glGetUniformLocation(bp, "modelPos");
 
         glUseProgram(bp);
 
@@ -110,23 +116,36 @@ void display(CAMERA* c, HDC hdc, HWND hWnd) {  //display function
         //m->rotation->y += .001;
 
         mat4 vMat = fromPositionAndRotation(inverseVec3(*(c->position)), inverseVec3(*(c->rotation)));
-        mat4 mMat = fromPositionAndRotation(*(m->position), *(m->rotation));
+        mat4 mMat = fromPositionAndRotation(*(monkey->position), *(monkey->rotation));
         mat4 mvMat = mulMat(mulMat(identityMatrix, vMat), mMat);
 
         vals = getVals(mvMat);
         glUniformMatrix4fv(mvLoc, 1, GL_FALSE, vals);
         free(vals);
 
+        //print("%f, %f, %f\n", c->position->x, c->position->y, c->position->z);
+        glUniform3f(camposLoc, c->position->x, c->position->y, c->position->z);
+        glUniform3f(modelposLoc, monkey->position->x, monkey->position->y, monkey->position->z);
+
         glBindVertexArray(vaoId);
+
         glBindBuffer(GL_ARRAY_BUFFER, vboId[0]);
-
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
         glEnableVertexAttribArray(0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
-        glPointSize(30);
+        glBindBuffer(GL_ARRAY_BUFFER, vboId[1]);
+        glEnableVertexAttribArray(1);
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+
         //glDrawArrays(GL_TRIANGLES, 0, (sizeof(verts) / sizeof(verts[0])));
-        glDrawArrays(GL_TRIANGLES, 0, monkey->numVerts);
+        //glDrawArrays(GL_TRIANGLES, 0, monkey->numVerts);
 
+
+
+
+        //glDrawElements(GL_TRIANGLES, monkey->numFaces * 3, GL_UNSIGNED_INT, NULL);
+        glDrawArrays(GL_TRIANGLES, 0, monkey->numFaces * 3 * 3);
 
         SwapBuffers(hdc);
     }
@@ -135,6 +154,7 @@ void display(CAMERA* c, HDC hdc, HWND hWnd) {  //display function
 void initRenderer() {
     monkey = getMeshData("assets/models/monkeyTri.obj");
 
+    ///*
     camera = calloc(1, sizeof(CAMERA));
     (camera->position) = calloc(1, sizeof(vec3));
     *(camera->position) = (vec3){0, 0, 0};
@@ -151,6 +171,12 @@ void initRenderer() {
     (m->rotation) = calloc(1, sizeof(vec3));
     *(m->rotation) = (vec3){0, 0, 0};
 
+    monkey->position = calloc(1, sizeof(vec3));
+    *(monkey->position) = (vec3){0, 0, -5};
+
+    (monkey->rotation) = calloc(1, sizeof(vec3));
+    *(monkey->rotation) = (vec3){0, 0, 0};
+
     wglSwapIntervalEXT(0);
 
     bp = createBasicProgram();
@@ -164,20 +190,28 @@ void initRenderer() {
     glGenBuffers(2, vboId);
     checkGLError("glGenBuffers");
 
-    glBindBuffer(GL_ARRAY_BUFFER, vboId[0]);
-    checkGLError("glBindBuffer");
+    //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vboId[1]);
+    //checkGLError("glBindBuffer0");
+    //glBufferData(GL_ELEMENT_ARRAY_BUFFER, monkey->numFaces * 3 * sizeof(int), monkey->faces, GL_STATIC_DRAW);
+    //checkGLError("glBufferIndices");
 
-    //glBufferData(GL_ARRAY_BUFFER, sizeof(verts), erts, GL_STATIC_DRAW);
-    glBufferData(GL_ARRAY_BUFFER, monkey->numVerts * sizeof(float) * 3, monkey->verts, GL_STATIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, vboId[0]);
+    checkGLError("glBindBuffer1");
+    glBufferData(GL_ARRAY_BUFFER, monkey->numFaces * sizeof(float) * 3 * 3, monkey->vertsOrdered, GL_STATIC_DRAW);
     checkGLError("glBufferData");
-    print("%i\n", monkey->numVerts);
+
+    glBindBuffer(GL_ARRAY_BUFFER, vboId[1]);
+    checkGLError("glBindBuffer1");
+    glBufferData(GL_ARRAY_BUFFER, monkey->numFaces * sizeof(float) * 3 * 3, monkey->normalsOrdered, GL_STATIC_DRAW);
+    checkGLError("glBufferData");
 
     const char* v = (const char*)glGetString(GL_VERSION);
     print("version: %s\n", v);
+    //*/
 }
 
 void updateSize(int w, int h) {
-    getPerspectiveMatrix(&perspectiveMat, 70.0, (double)w/(double)h, .1, 100);
+    getPerspectiveMatrix(&perspectiveMat, 70.0, (double)w/(double)h, .1, 1000);
 }
 
 int lastTime = 0, dt = 0, timeSinceLastFrameUpdate = 0, lastFrameTime = 0, fps = 0, framesSinceLastUpdate = 0;
