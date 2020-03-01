@@ -3,12 +3,6 @@
 #include "ghettoWin.h"
 #include "glMath.h"
 
-typedef struct mesh {
-    float* verts;
-    vec3* rotation;
-    vec3* position;
-} MESH;
-
 typedef struct camera {
     vec3* position;
     vec3* rotation;

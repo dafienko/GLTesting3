@@ -61,7 +61,7 @@ FILEDATA* getFileData(FILE* pfFile) {
 
         lineStart = ftell(pfFile);
 
-
+        print(line);
         *(ppcstrLines + l) = line;
         *(piLengths + l) = iLineLength;
 
@@ -84,3 +84,51 @@ void freeFileData(FILEDATA* fd) {
     free(fd->lengths);
     free(fd);
 }
+
+char* lstrip(const char* src) {
+    char* result = (char*)calloc(strlen(src) + 1, sizeof(char));
+    int rLen = 0;
+
+    char c = 0;
+    int strip = 1;
+    for (int i = 0; i < strlen(src); i++) {
+        c = *(src + i);
+        if (strip) {
+            if (c != ' ' && c != '\n' && c != '\t') {
+                strip = 0;
+            }
+        }
+
+        if (!strip) {
+            *(result + rLen) = c;
+            rLen++;
+        }
+    }
+
+    return result;
+}
+
+MESH* getMeshData(const char* meshName) {
+    FILE* file = getFile(meshName);
+    FILEDATA* fd = getFileData(file);
+    MESH* mesh = calloc(1, sizeof(MESH));
+
+
+    //for (int i = 0; i < fd->numLines; i++) {
+        //char* newline = lstrip(*(fd->lines + i));
+        //free(*(fd->lines + i));
+        //*(fd->lines + i) = newline;
+    //}
+
+    return mesh;
+}
+
+
+
+
+
+
+
+
+
+

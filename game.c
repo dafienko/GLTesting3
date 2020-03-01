@@ -7,10 +7,17 @@
 #include "renderer.h"
 #include "consoleUtil.h"
 #include "mouse.h"
+#include "fileUtil.h"
+
 
 void initGame() {
-    lockMouse();
-    hideMouse();
+    //lockMouse();
+    //hideMouse();
+
+    FILE* f = getFile("/assets/models/monkey.obj");
+    FILEDATA* fd = getFileData(f);
+
+    //getMeshData("/assets/models/monkey.obj");
 }
 
 float sensitivity = .2;

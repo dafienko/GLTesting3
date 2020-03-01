@@ -46,6 +46,7 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="game.h" />
+		<Unit filename="ghettoWin.h" />
 		<Unit filename="glExtensions.c">
 			<Option compilerVar="CC" />
 		</Unit>

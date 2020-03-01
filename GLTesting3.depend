@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1582827129 source:c:\users\dafie\desktop\codeblocksworkspace\gltesting3\main.c
+1582895933 source:c:\users\dafie\desktop\codeblocksworkspace\gltesting3\main.c
 	<stdio.h>
 	"ghettoWin.h"
 	<winuser.h>
@@ -13,7 +13,7 @@
 	"game.h"
 	"mouse.h"
 
-1582745410 source:c:\users\dafie\desktop\codeblocksworkspace\gltesting3\fileutil.c
+1582897831 source:c:\users\dafie\desktop\codeblocksworkspace\gltesting3\fileutil.c
 	<stdio.h>
 	<stdlib.h>
 	<string.h>
@@ -21,8 +21,9 @@
 	"fileUtil.h"
 	"consoleUtil.h"
 
-1582549520 c:\users\dafie\desktop\codeblocksworkspace\gltesting3\fileutil.h
+1582897436 c:\users\dafie\desktop\codeblocksworkspace\gltesting3\fileutil.h
 	<stdio.h>
+	"glMath.h"
 
 1582745393 source:c:\users\dafie\desktop\codeblocksworkspace\gltesting3\shaderutil.c
 	<stdio.h>
@@ -33,8 +34,9 @@
 	"shaderUtil.h"
 	"consoleUtil.h"
 
-1582749808 source:c:\users\dafie\desktop\codeblocksworkspace\gltesting3\renderer.c
+1582897497 source:c:\users\dafie\desktop\codeblocksworkspace\gltesting3\renderer.c
 	<stdio.h>
+	<stdlib.h>
 	"ghettoWin.h"
 	<sys/timeb.h>
 	<time.h>
@@ -46,7 +48,7 @@
 	"consoleUtil.h"
 	"game.h"
 
-1582745404 c:\users\dafie\desktop\codeblocksworkspace\gltesting3\renderer.h
+1582831614 c:\users\dafie\desktop\codeblocksworkspace\gltesting3\renderer.h
 	"ghettoWin.h"
 	"glMath.h"
 
@@ -227,7 +229,7 @@
 1582510389 d:\codeblocksworkspace\gltesting3\mouse.h
 	"glMath.h"
 
-1582749934 source:c:\users\dafie\desktop\codeblocksworkspace\gltesting3\game.c
+1582897717 source:c:\users\dafie\desktop\codeblocksworkspace\gltesting3\game.c
 	"ghettoWin.h"
 	<math.h>
 	"glMath.h"
@@ -236,6 +238,7 @@
 	"renderer.h"
 	"consoleUtil.h"
 	"mouse.h"
+	"fileUtil.h"
 
 1582549520 c:\users\dafie\desktop\codeblocksworkspace\gltesting3\game.h
 

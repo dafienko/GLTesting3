@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include "ghettoWin.h"
 #include <sys/timeb.h>
 #include <time.h>
@@ -145,7 +146,7 @@ void initRenderer() {
     (m->rotation) = calloc(1, sizeof(vec3));
     *(m->rotation) = (vec3){0, 0, 0};
 
-    wglSwapIntervalEXT(0);
+    wglSwapIntervalEXT(1);
 
     bp = createBasicProgram();
 
