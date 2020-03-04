@@ -83,6 +83,11 @@ void updateGame(float dt) {
 
     movementVector = mulVec3(movementVector, speed * dt);
 
+    float speedModifier = 1;
+    if (isKeyDown(VK_SHIFT)) {
+        speedModifier = .1
+    }
+
     vec3 pos = camera->position;
     camera->position = addVec3(pos, movementVector);
 

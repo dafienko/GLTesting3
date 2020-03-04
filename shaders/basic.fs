@@ -37,22 +37,24 @@ void main(void) {
 	float theta = atan((y + y2) / b); // angle between perfect bounce vector from light to surface plane to camera and surface plane
 	float x1 = y / tan(theta);
 	vec3 hitPos = llPos + llDir * x1; // light position cast onto the surface plane + plane light->camera vector * lateral distance from light to hitPos on plane
-	vec3 bounceDir = normalize(hitPos - relLightPos);
-	bounceDir = normalize(bounceDir + norm * 2);
+	vec3 bounceDir = normalize(hitPos - lcPos);
+	//bounceDir = normalize(bounceDir + norm * 2);
+	vec3 sDir = normalize(hitPos - cameraPos);
 	
-	float angle = acos(min(1, dot(camDir, -bounceDir)));
+	float angle = acos(dot(camDir, sDir));
 	
-	float spectral = 1 - (min(10, angle * (180 / PI)) / 10);
+	float spectral = 1 - min(1, angle / ((PI/180) * 1));
+	float dist = length(worldPos - hitPos);
+	spectral *= 1 - min(1, dist / .1);
+	//spectral *= .5;
+	//float spectral = 1 - (min(10, angle * (180 / PI)) / 10);
 	//float spectral = angle;
 	
 	//color = vec4(bounceDir, 0);
 	
-	float dist = length(worldPos - hitPos);
 	
-	if (dist > .1) {
-		color = vec4(spectral, min(diffuse, 0), min(diffuse, 0), 0);
-	} else {
-		color = vec4(0, 0, 1, 0);
-	}
+	
+	color = vec4(spectral, min(diffuse, 0), min(diffuse, 0), 0);
+
 	//color = c;
 }
