@@ -148,15 +148,15 @@ void display(CAMERA* c, HDC hdc, HWND hWnd) {  //display function
 }
 
 void initRenderer() {
-    monkey = getMeshData("assets/models/mindbender.obj");
+    monkey = getMeshData("assets/models/plane.obj");
 
     ///*
     camera = calloc(1, sizeof(CAMERA));
     camera->position = (vec3){0, 0, 0};
     camera->rotation = (vec3){0, 0, 0};
 
-    monkey->position = (vec3){0, 0, -5};
-    monkey->scale = (vec3){.1, .1, .1};
+    monkey->position = (vec3){0, -50, -5};
+    monkey->scale = (vec3){100, 100, 100};
     monkey->rotation = (vec3){0, 0, 0};
 
     wglSwapIntervalEXT(1);

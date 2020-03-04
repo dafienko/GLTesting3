@@ -42,10 +42,17 @@ void main(void) {
 	
 	float angle = acos(min(1, dot(camDir, -bounceDir)));
 	
-	float spectral = min(angle / ((180 / PI) * 10), 1);
+	float spectral = 1 - (min(10, angle * (180 / PI)) / 10);
 	//float spectral = angle;
 	
 	//color = vec4(bounceDir, 0);
-	color = vec4(angle * (180 / PI), min(diffuse, 0), min(diffuse, 0), 0);
+	
+	float dist = length(worldPos - hitPos);
+	
+	if (dist > .1) {
+		color = vec4(spectral, min(diffuse, 0), min(diffuse, 0), 0);
+	} else {
+		color = vec4(0, 0, 1, 0);
+	}
 	//color = c;
 }
