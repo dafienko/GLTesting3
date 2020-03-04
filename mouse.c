@@ -2,7 +2,7 @@
 #include "windows.h"
 
 HANDLE hWnd;
-mouseLocked = 0;
+int mouseLocked = 0;
 vec2 mouseDelta = {0, 0};
 
 void initMouse(HANDLE h) {

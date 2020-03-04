@@ -17,8 +17,7 @@ GLuint vboId[2];
 GLuint vaoId = 0;
 
 //uniforms
-GLint projLoc, mvLoc, camposLoc, modelposLoc;
-MESH* m;
+GLint projLoc, mvLoc, camposLoc, modelposLoc, scaleLoc;
 
 #define tPos 1
 #define yOff 1
@@ -79,6 +78,10 @@ int ms;
 
 MESH* monkey;
 
+
+
+
+
 int displayEnabled = 1; // for use with debugging shaders
 void display(CAMERA* c, HDC hdc, HWND hWnd) {  //display function
     if (displayEnabled) {
@@ -106,6 +109,7 @@ void display(CAMERA* c, HDC hdc, HWND hWnd) {  //display function
         mvLoc = glGetUniformLocation(bp, "mv_matrix");
         camposLoc = glGetUniformLocation(bp, "cameraPos");
         modelposLoc = glGetUniformLocation(bp, "modelPos");
+        scaleLoc = glGetUniformLocation(bp, "scale");
 
         glUseProgram(bp);
 
@@ -115,17 +119,17 @@ void display(CAMERA* c, HDC hdc, HWND hWnd) {  //display function
 
         //m->rotation->y += .001;
 
-        mat4 vMat = fromPositionAndRotation(inverseVec3(*(c->position)), inverseVec3(*(c->rotation)));
-        mat4 mMat = fromPositionAndRotation(*(monkey->position), *(monkey->rotation));
+        mat4 vMat = fromPositionAndRotation(inverseVec3(c->position), inverseVec3(c->rotation));
+        mat4 mMat = fromPositionAndRotation(monkey->position, monkey->rotation);
         mat4 mvMat = mulMat(mulMat(identityMatrix, vMat), mMat);
 
         vals = getVals(mvMat);
         glUniformMatrix4fv(mvLoc, 1, GL_FALSE, vals);
         free(vals);
 
-        //print("%f, %f, %f\n", c->position->x, c->position->y, c->position->z);
-        glUniform3f(camposLoc, c->position->x, c->position->y, c->position->z);
-        glUniform3f(modelposLoc, monkey->position->x, monkey->position->y, monkey->position->z);
+        glUniform3f(camposLoc, c->position.x, c->position.y, c->position.z);
+        glUniform3f(modelposLoc, monkey->position.x, monkey->position.y, monkey->position.z);
+        glUniform3f(scaleLoc, monkey->scale.x, monkey->scale.y, monkey->scale.z);
 
         glBindVertexArray(vaoId);
 
@@ -137,14 +141,6 @@ void display(CAMERA* c, HDC hdc, HWND hWnd) {  //display function
         glEnableVertexAttribArray(1);
         glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
-
-        //glDrawArrays(GL_TRIANGLES, 0, (sizeof(verts) / sizeof(verts[0])));
-        //glDrawArrays(GL_TRIANGLES, 0, monkey->numVerts);
-
-
-
-
-        //glDrawElements(GL_TRIANGLES, monkey->numFaces * 3, GL_UNSIGNED_INT, NULL);
         glDrawArrays(GL_TRIANGLES, 0, monkey->numFaces * 3 * 3);
 
         SwapBuffers(hdc);
@@ -152,32 +148,18 @@ void display(CAMERA* c, HDC hdc, HWND hWnd) {  //display function
 }
 
 void initRenderer() {
-    monkey = getMeshData("assets/models/monkeyTri.obj");
+    monkey = getMeshData("assets/models/mindbender.obj");
 
     ///*
     camera = calloc(1, sizeof(CAMERA));
-    (camera->position) = calloc(1, sizeof(vec3));
-    *(camera->position) = (vec3){0, 0, 0};
+    camera->position = (vec3){0, 0, 0};
+    camera->rotation = (vec3){0, 0, 0};
 
-    (camera->rotation) = calloc(1, sizeof(vec3));
-    *(camera->rotation) = (vec3){0, 0, 0};
+    monkey->position = (vec3){0, 0, -5};
+    monkey->scale = (vec3){.1, .1, .1};
+    monkey->rotation = (vec3){0, 0, 0};
 
-    m = calloc(1, sizeof(MESH));
-    m->verts = verts;
-
-    (m->position) = calloc(1, sizeof(vec3));
-    *(m->position) = (vec3){0, 0, -2};
-
-    (m->rotation) = calloc(1, sizeof(vec3));
-    *(m->rotation) = (vec3){0, 0, 0};
-
-    monkey->position = calloc(1, sizeof(vec3));
-    *(monkey->position) = (vec3){0, 0, -5};
-
-    (monkey->rotation) = calloc(1, sizeof(vec3));
-    *(monkey->rotation) = (vec3){0, 0, 0};
-
-    wglSwapIntervalEXT(0);
+    wglSwapIntervalEXT(1);
 
     bp = createBasicProgram();
 

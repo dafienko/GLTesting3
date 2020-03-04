@@ -8,12 +8,13 @@ typedef struct mesh {
     vec3* normals;
     vec2* texCoords;
     int* faces;
-    vec3* rotation;
-    vec3* position;
+    vec3 rotation;
+    vec3 position;
     int numVerts;
     int numFaces;
     vec3* vertsOrdered;
     vec3* normalsOrdered;
+    vec3 scale;
 } MESH;
 
 typedef struct {

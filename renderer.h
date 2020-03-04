@@ -4,8 +4,8 @@
 #include "glMath.h"
 
 typedef struct camera {
-    vec3* position;
-    vec3* rotation;
+    vec3 position;
+    vec3 rotation;
 } CAMERA;
 
 mat4 perspectiveMat;

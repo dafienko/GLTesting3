@@ -11,8 +11,8 @@
 
 
 void initGame() {
-    lockMouse();
-    hideMouse();
+    //lockMouse();
+   // hideMouse();
 
     //getMeshData("assets/models/monkey.obj");
 }
@@ -26,10 +26,10 @@ void updateFrame(float dt) {
 
     clearMouseDelta();
 
-    camera->rotation->x += rad(-dy * sensitivity);
-    camera->rotation->y += rad(-dx * sensitivity);
+    camera->rotation.x += rad(-dy * sensitivity);
+    camera->rotation.y += rad(-dx * sensitivity);
 
-    camera->rotation->x = min(max(camera->rotation->x, rad(-80)), rad(80));
+    camera->rotation.x = min(max(camera->rotation.x, rad(-80)), rad(80));
 }
 
 float speed = 6;
@@ -62,13 +62,13 @@ void updateGame(float dt) {
 
     vec3 rightVector = identityVec3;
     rightVector.y = 0;
-    rightVector.x = cos(camera->rotation->y);
-    rightVector.z = -sin(camera->rotation->y);
+    rightVector.x = cos(camera->rotation.y);
+    rightVector.z = -sin(camera->rotation.y);
 
     vec3 lookVector = identityVec3;
-    lookVector.y = sin(camera->rotation->x);
-    lookVector.x = cos((camera->rotation->y) + rad(90));
-    lookVector.z = -sin((camera->rotation->y) + rad(90));
+    lookVector.y = sin(camera->rotation.x);
+    lookVector.x = cos((camera->rotation.y) + rad(90));
+    lookVector.z = -sin((camera->rotation.y) + rad(90));
 
     vec3 upVector = identityVec3;
     upVector.y = yDir;
@@ -83,22 +83,22 @@ void updateGame(float dt) {
 
     movementVector = mulVec3(movementVector, speed * dt);
 
-    vec3 pos = *(camera->position);
-    *(camera->position) = addVec3(pos, movementVector);
+    vec3 pos = camera->position;
+    camera->position = addVec3(pos, movementVector);
 
     if (isKeyDown(VK_UP)) {
-        camera->rotation->x += dt * sensitivity * 10;
+        camera->rotation.x += dt * sensitivity * 10;
     }
     if (isKeyDown(VK_DOWN)) {
-        camera->rotation->x += dt * -sensitivity * 10;
+        camera->rotation.x += dt * -sensitivity * 10;
     }
-    camera->rotation->x = min(max(camera->rotation->x, rad(-80)), rad(80));
+    camera->rotation.x = min(max(camera->rotation.x, rad(-80)), rad(80));
 
     if (isKeyDown(VK_RIGHT)) {
-        camera->rotation->y += dt * -sensitivity * 10;
+        camera->rotation.y += dt * -sensitivity * 10;
     }
     if (isKeyDown(VK_LEFT)) {
-        camera->rotation->y += dt * sensitivity * 10;
+        camera->rotation.y += dt * sensitivity * 10;
     }
 
 

@@ -1,5 +1,7 @@
 #include "ghettoWin.h"
 #include "keyboard.h"
+#include "consoleUtil.h"
+#include <stdlib.h>
 
 #define kbdBufferSize 50
 
@@ -39,11 +41,13 @@ void initKeyboard() {
 }
 
 void keyDown(int key) {
+    print("%i down\n", key);
     *(addBuffer + currentLength) = key;
     currentLength++;
 }
 
 void keyUp(int key) {
+    print("%i up\n", key);
     for (int i = 0; i < currentLength; i++) {
         if (key == *(addBuffer + i)) {
             *(addBuffer + i) = -1;
@@ -52,11 +56,13 @@ void keyUp(int key) {
 }
 
 int isKeyDown(int key) {
+
+    /*
     for (int i = 0; i < kbdBufferSize; i++) {
         if (key == *(keysDown + i)) {
             return 1;
         }
     }
-
-    return 0;
+    */
+    return GetAsyncKeyState(key);
 }

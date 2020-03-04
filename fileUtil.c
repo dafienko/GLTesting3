@@ -278,21 +278,21 @@ MESH* getMeshData(const char* meshName) {
                 //printVec3(*(mesh->verts + c - 1));
 
                 *(mesh->vertsOrdered + orderIndex) = *(mesh->verts + a - 1);
-                if (na != NULL) {
+                if (na != 0) {
                     *(mesh->normalsOrdered + orderIndex) = *(mesh->normals + na - 1);
                 }
                 //print("oi: %i\n", orderIndex);
                 orderIndex++;
 
                 *(mesh->vertsOrdered + orderIndex) = *(mesh->verts + b - 1);
-                if (nb != NULL) {
+                if (nb != 0) {
                     *(mesh->normalsOrdered + orderIndex) = *(mesh->normals + nb - 1);
                 }
                 //print("oi: %i\n", orderIndex);
                 orderIndex++;
 
                 *(mesh->vertsOrdered + orderIndex) = *(mesh->verts + c - 1);
-                if (nc != NULL) {
+                if (nc != 0) {
                     *(mesh->normalsOrdered + orderIndex) = *(mesh->normals + nc - 1);
                 }
                 //print("oi: %i\n", orderIndex);

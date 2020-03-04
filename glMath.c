@@ -1,6 +1,7 @@
 #include "glMath.h"
 #include <math.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include "consoleUtil.h"
 
 /*
