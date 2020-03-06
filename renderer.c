@@ -128,7 +128,7 @@ void initRenderer(const char* cmd) {
         monkey = getMeshData(betterCmd);
         free(betterCmd);
     } else {
-        monkey = getMeshData("C:\\Users\\dafie\\Desktop\\codeBlocksWorkspace\\GLTesting3\\assets\\models\\cube.obj");
+        monkey = getMeshData("C:\\Users\\dafie\\Desktop\\codeBlocksWorkspace\\GLTesting3\\assets\\models\\monkey.obj");
     }
 
     camera = calloc(1, sizeof(CAMERA));
@@ -172,7 +172,7 @@ void initRenderer(const char* cmd) {
 }
 
 void updateSize(int w, int h) {
-    getPerspectiveMatrix(&perspectiveMat, 70.0, (double)w/(double)h, 2, 1000);
+    getPerspectiveMatrix(&perspectiveMat, 70.0, (double)w/(double)h, 2, 10000);
 }
 
 int lastTime = 0, dt = 0, timeSinceLastFrameUpdate = 0, lastFrameTime = 0, fps = 0, framesSinceLastUpdate = 0;

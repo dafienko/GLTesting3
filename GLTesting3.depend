@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1583502707 source:c:\users\dafie\desktop\codeblocksworkspace\gltesting3\main.c
+1583502723 source:c:\users\dafie\desktop\codeblocksworkspace\gltesting3\main.c
 	<stdio.h>
 	"ghettoWin.h"
 	<winuser.h>
@@ -35,7 +35,7 @@
 	"shaderUtil.h"
 	"consoleUtil.h"
 
-1583501098 source:c:\users\dafie\desktop\codeblocksworkspace\gltesting3\renderer.c
+1583521597 source:c:\users\dafie\desktop\codeblocksworkspace\gltesting3\renderer.c
 	<stdio.h>
 	<stdlib.h>
 	"ghettoWin.h"

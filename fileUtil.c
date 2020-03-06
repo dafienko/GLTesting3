@@ -229,8 +229,8 @@ MESH* getMeshData(const char* meshName) {
     mesh->normals = calloc(numNormals, sizeof(vec3));
     mesh->numVerts = numVerts;
     mesh->numFaces = numFaces;
-    mesh->normalsOrdered = calloc(numFaces * 3, sizeof(vec3));
-    mesh->vertsOrdered = calloc(numFaces * 3, sizeof(vec3));
+    mesh->normalsOrdered = calloc(numFaces * 3 * 2, sizeof(vec3));
+    mesh->vertsOrdered = calloc(numFaces * 3 * 2, sizeof(vec3));
 
     int vertIndex = 0, normalIndex = 0, textureIndex = 0, faceIndex = 0;
     int orderIndex = 0;
@@ -252,9 +252,6 @@ MESH* getMeshData(const char* meshName) {
                 float x = strtof(*(splits + 1), NULL);
                 float y = strtof(*(splits + 2), NULL);
                 float z = strtof(*(splits + 3), NULL);
-                //print("%f, %f, %f\n", x, y, z);
-                //print("%s, %s, %s\n", *(splits + 1), *(splits + 2), *(splits + 3));
-                //print("bruh\n");
                 *(mesh->verts + vertIndex) = (vec3){x, y, z};
                 vertIndex++;
             } else if (strcmp(*(splits), "f") == 0) {
@@ -273,38 +270,51 @@ MESH* getMeshData(const char* meshName) {
                 int nc = atoi(*(third + 2));
                 freeSplits(third);
 
-                //printVec3(*(mesh->verts + a - 1));
-                //printVec3(*(mesh->verts + b - 1));
-                //printVec3(*(mesh->verts + c - 1));
+                char* fourthS = *(splits + 4);
+                if (fourthS != 0) {
+                    char** fourth = strsplit(fourthS, "/");
+                    int d = atoi(*fourth);
+                    int nd = atoi(*(fourth + 2));
+                    freeSplits(fourth);
+
+                    *(mesh->vertsOrdered + orderIndex) = *(mesh->verts + a - 1);
+                    if (nb != 0) {
+                        *(mesh->normalsOrdered + orderIndex) = *(mesh->normals + na - 1);
+                    }
+                    orderIndex++;
+
+                    *(mesh->vertsOrdered + orderIndex) = *(mesh->verts + c - 1);
+                    if (nc != 0) {
+                        *(mesh->normalsOrdered + orderIndex) = *(mesh->normals + nc - 1);
+                    }
+                    orderIndex++;
+
+                    *(mesh->vertsOrdered + orderIndex) = *(mesh->verts + d - 1);
+                    if (nd != 0) {
+                        *(mesh->normalsOrdered + orderIndex) = *(mesh->normals + nd - 1);
+                    }
+                    mesh->numFaces++;
+                    orderIndex++;
+                }
+
 
                 *(mesh->vertsOrdered + orderIndex) = *(mesh->verts + a - 1);
                 if (na != 0) {
                     *(mesh->normalsOrdered + orderIndex) = *(mesh->normals + na - 1);
                 }
-                //print("oi: %i\n", orderIndex);
                 orderIndex++;
 
                 *(mesh->vertsOrdered + orderIndex) = *(mesh->verts + b - 1);
                 if (nb != 0) {
                     *(mesh->normalsOrdered + orderIndex) = *(mesh->normals + nb - 1);
                 }
-                //print("oi: %i\n", orderIndex);
                 orderIndex++;
 
                 *(mesh->vertsOrdered + orderIndex) = *(mesh->verts + c - 1);
                 if (nc != 0) {
                     *(mesh->normalsOrdered + orderIndex) = *(mesh->normals + nc - 1);
                 }
-                //print("oi: %i\n", orderIndex);
                 orderIndex++;
-
-
-                //print("%i, %i, %i\n", faceIndex * 3 + 0, faceIndex * 3 + 1, faceIndex * 3 + 2);
-                *(mesh->faces + faceIndex * 3 + 0) = a - 1; // -1, obj indices count from 1, opengl counts from 0
-                *(mesh->faces + faceIndex * 3 + 1) = b - 1;
-                *(mesh->faces + faceIndex * 3 + 2) = c - 1;
-                //print("%i, %i, %i\n", a, b, c);
-                faceIndex++;
             }
 
             freeSplits(splits);
