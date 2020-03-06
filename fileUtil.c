@@ -271,7 +271,7 @@ MESH* getMeshData(const char* meshName) {
                 freeSplits(third);
 
                 char* fourthS = *(splits + 4);
-                if (fourthS != 0) {
+                if (*fourthS != 0) {
                     char** fourth = strsplit(fourthS, "/");
                     int d = atoi(*fourth);
                     int nd = atoi(*(fourth + 2));
