@@ -185,7 +185,7 @@ void freeSplits(char** splits) {
 MESH* getMeshData(const char* meshName) {
     FILE* file = getFile(meshName);
     if (file == NULL) {
-        print("could not find file %s\n", meshName);
+        print("could not find file %s %i\n", meshName, errno);
     }
     FILEDATA* fd = getFileData(file);
     MESH* mesh = calloc(1, sizeof(MESH));

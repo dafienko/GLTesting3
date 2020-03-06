@@ -5,6 +5,7 @@
 #include <time.h>
 #include <gl/gl.h>
 
+#include "glMath.h"
 #include "renderer.h"
 #include "glExtensions.h"
 #include "shaderUtil.h"
@@ -17,59 +18,12 @@ GLuint vboId[2];
 GLuint vaoId = 0;
 
 //uniforms
-GLint projLoc, mvLoc, camposLoc, modelposLoc, scaleLoc;
+GLint projLoc, mvLoc, camposLoc, modelposLoc, scaleLoc, mLoc;
 
 #define tPos 1
 #define yOff 1
 
 //ccw = outward normal
- vec3 verts[] = { //back face
-            {tPos, tPos, -tPos},
-            {tPos, -tPos, -tPos},
-            {-tPos, -tPos,-tPos},
-            {tPos, tPos, -tPos},
-            {-tPos, -tPos, -tPos},
-            {-tPos, tPos, -tPos},
-
-            //front face
-            {tPos, tPos, tPos},
-            {-tPos, -tPos,tPos},
-            {tPos, -tPos, tPos},
-            {tPos, tPos, tPos},
-            {-tPos, tPos, tPos},
-            {-tPos, -tPos, tPos},
-
-            //right face
-            {tPos, tPos, tPos},
-            {tPos, -tPos, tPos},
-            {tPos, -tPos, -tPos},
-            {tPos, tPos, tPos},
-            {tPos, -tPos, -tPos},
-            {tPos, tPos, -tPos},
-
-            //left face
-            {-tPos, tPos, tPos},
-            {-tPos, -tPos, -tPos},
-            {-tPos, -tPos, tPos},
-            {-tPos, tPos, tPos},
-            {-tPos, tPos, -tPos},
-            {-tPos, -tPos, -tPos},
-
-            //top face
-            {-tPos, tPos, -tPos},
-            {-tPos, tPos, tPos},
-            {tPos, tPos, tPos},
-            {-tPos, tPos, -tPos},
-            {tPos, tPos, tPos},
-            {tPos, tPos, -tPos},
-
-            {-tPos, -tPos, -tPos},
-            {tPos, -tPos, tPos},
-            {-tPos, -tPos, tPos},
-            {-tPos, -tPos, -tPos},
-            {tPos, -tPos, -tPos},
-            {tPos, -tPos, tPos}
-};
 
 int timeSincePhysicsUpdate = 0;
 const int timeBetweenPhysicsUpdates = 10; // milliseconds
@@ -110,6 +64,7 @@ void display(CAMERA* c, HDC hdc, HWND hWnd) {  //display function
         camposLoc = glGetUniformLocation(bp, "cameraPos");
         modelposLoc = glGetUniformLocation(bp, "modelPos");
         scaleLoc = glGetUniformLocation(bp, "scale");
+        mLoc = glGetUniformLocation(bp, "m_matrix");
 
         glUseProgram(bp);
 
@@ -117,11 +72,20 @@ void display(CAMERA* c, HDC hdc, HWND hWnd) {  //display function
         glUniformMatrix4fv(projLoc, 1, GL_FALSE, vals);
         free(vals);
 
-        //m->rotation->y += .001;
-
         mat4 vMat = fromPositionAndRotation(inverseVec3(c->position), inverseVec3(c->rotation));
-        mat4 mMat = fromPositionAndRotation(monkey->position, monkey->rotation);
+        mat4 mMat = rotateXYZ(monkey->rotation.x, monkey->rotation.y, monkey->rotation.z);
+        mMat.d = monkey->position.x;
+        mMat.h = monkey->position.y;
+        mMat.l = monkey->position.z;
+
+
         mat4 mvMat = mulMat(mulMat(identityMatrix, vMat), mMat);
+        //mat4 mvMat = mulMat(mulMat(identityMatrix, mMat), vMat);
+
+
+        vals = getVals(mMat);
+        glUniformMatrix4fv(mLoc, 1, GL_FALSE, vals);
+        free(vals);
 
         vals = getVals(mvMat);
         glUniformMatrix4fv(mvLoc, 1, GL_FALSE, vals);
@@ -147,21 +111,36 @@ void display(CAMERA* c, HDC hdc, HWND hWnd) {  //display function
     }
 }
 
-void initRenderer() {
-    monkey = getMeshData("assets/models/plane.obj");
+void initRenderer(const char* cmd) {
+    bp = createBasicProgram();
 
-    ///*
+
+    if (strlen(cmd) > 1) {
+        char* betterCmd = calloc(strlen(cmd) + 1, sizeof(char));
+        int charsUsed = 0;
+        for (int i = 0; i < strlen(cmd); i++) {
+            if (*(cmd + i) != '"') {
+                *(betterCmd + charsUsed) = *(cmd + i);
+                charsUsed++;
+            }
+        }
+
+        monkey = getMeshData(betterCmd);
+        free(betterCmd);
+    } else {
+        monkey = getMeshData("C:\\Users\\dafie\\Desktop\\codeBlocksWorkspace\\GLTesting3\\assets\\models\\cube.obj");
+    }
+
     camera = calloc(1, sizeof(CAMERA));
     camera->position = (vec3){0, 0, 0};
     camera->rotation = (vec3){0, 0, 0};
 
-    monkey->position = (vec3){0, -50, -5};
-    monkey->scale = (vec3){100, 100, 100};
-    monkey->rotation = (vec3){0, 0, 0};
+    monkey->position = (vec3){0, 0, -50};
+    monkey->scale = (vec3){12, 12, 12};
+    //monkey->scale = (vec3){.1, .1, .1};
+    monkey->rotation = (vec3){0, -PI/4, 0};
 
     wglSwapIntervalEXT(1);
-
-    bp = createBasicProgram();
 
     glGenVertexArrays(1, &vaoId);
     checkGLError("glGenVertexArrays");
@@ -193,7 +172,7 @@ void initRenderer() {
 }
 
 void updateSize(int w, int h) {
-    getPerspectiveMatrix(&perspectiveMat, 70.0, (double)w/(double)h, .1, 1000);
+    getPerspectiveMatrix(&perspectiveMat, 70.0, (double)w/(double)h, 2, 1000);
 }
 
 int lastTime = 0, dt = 0, timeSinceLastFrameUpdate = 0, lastFrameTime = 0, fps = 0, framesSinceLastUpdate = 0;

@@ -32,7 +32,7 @@ void updateFrame(float dt) {
     camera->rotation.x = min(max(camera->rotation.x, rad(-80)), rad(80));
 }
 
-float speed = 6;
+float speed = 60;
 void updateGame(float dt) {
     ;
     float xDir = 0;
@@ -85,11 +85,11 @@ void updateGame(float dt) {
 
     float speedModifier = 1;
     if (isKeyDown(VK_SHIFT)) {
-        speedModifier = .1
+        speedModifier = .1;
     }
 
     vec3 pos = camera->position;
-    camera->position = addVec3(pos, movementVector);
+    camera->position = addVec3(pos, mulVec3(movementVector, speedModifier));
 
     if (isKeyDown(VK_UP)) {
         camera->rotation.x += dt * sensitivity * 10;

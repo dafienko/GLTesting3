@@ -21,4 +21,4 @@ CAMERA* camera;
 void updateSize(int width, int height);
 int frameTick(HWND);
 void display(CAMERA*, HDC, HWND);
-void initRenderer();
+void initRenderer(const char*);

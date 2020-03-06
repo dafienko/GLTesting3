@@ -41,13 +41,11 @@ void initKeyboard() {
 }
 
 void keyDown(int key) {
-    print("%i down\n", key);
     *(addBuffer + currentLength) = key;
     currentLength++;
 }
 
 void keyUp(int key) {
-    print("%i up\n", key);
     for (int i = 0; i < currentLength; i++) {
         if (key == *(addBuffer + i)) {
             *(addBuffer + i) = -1;

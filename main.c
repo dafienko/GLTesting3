@@ -43,6 +43,11 @@ int WINAPI WinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,LPSTR lpCmdLine,i
     MSG msg;
     BOOL bQuit = FALSE;
 
+    char* fileName = calloc(200, sizeof(char));
+    sprintf(fileName, "%sicon.ico", installDirectory);
+    HICON icon = LoadImage(hInstance, fileName, IMAGE_ICON, 128, 128, LR_LOADFROMFILE);
+    free(fileName);
+
     /* register window class */
     wcex.cbSize = sizeof(WNDCLASSEX);
     wcex.style = CS_OWNDC;
@@ -50,12 +55,12 @@ int WINAPI WinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,LPSTR lpCmdLine,i
     wcex.cbClsExtra = 0;
     wcex.cbWndExtra = 0;
     wcex.hInstance = hInstance;
-    wcex.hIcon = LoadIcon(NULL, IDI_APPLICATION);
+    wcex.hIcon = icon;
     wcex.hCursor = LoadCursor(NULL, IDC_ARROW);
     wcex.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
     wcex.lpszMenuName = NULL;
     wcex.lpszClassName = "GLSample";
-    wcex.hIconSm = LoadIcon(NULL, IDI_APPLICATION);;
+    wcex.hIconSm = icon;
 
     if (!RegisterClassEx(&wcex))
         return 0;
@@ -95,7 +100,7 @@ int WINAPI WinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,LPSTR lpCmdLine,i
     initMouse(hWnd);
     initKeyboard();
     print("initializing renderer\n");
-    initRenderer();
+    initRenderer(lpCmdLine);
     print("done initializing renderer\n");
     updateSize(baseWidth, baseHeight);
 

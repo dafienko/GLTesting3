@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "ghettoWin.h"
 #include <gl/gl.h>
+#include <stdlib.h>
 
 #include "glExtensions.h"
 #include "fileUtil.h"
@@ -13,7 +14,10 @@ char errorBuffer[ERROR_BUFFER_SIZE];
 
 int createBasicProgram() {
     //vertex shader bullcrap
-    FILE* basicVSFile = getFile("shaders/basic.vs");
+    char* fileName = calloc(200, sizeof(char));
+    sprintf(fileName, "%sshaders\\basic.vs", installDirectory);
+    FILE* basicVSFile = getFile(fileName);
+    free(fileName);
     FILEDATA* vsfd = getFileData(basicVSFile);
     fclose(basicVSFile);
 
@@ -35,7 +39,10 @@ int createBasicProgram() {
 
 
     //fragment shader bullcrap
-    FILE* basicFSFile = getFile("shaders/basic.fs");
+    fileName = calloc(200, sizeof(char));
+    sprintf(fileName, "%sshaders\\basic.fs", installDirectory);
+    FILE* basicFSFile = getFile(fileName);
+    free(fileName);
     FILEDATA* fsfd = getFileData(basicFSFile);
     fclose(basicFSFile);
 
