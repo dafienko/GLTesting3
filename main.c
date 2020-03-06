@@ -2,6 +2,7 @@
 #include "ghettoWin.h"
 #include <winuser.h>
 #include <gl/gl.h>
+#include <stdlib.h>
 
 #include "shaderUtil.h"
 #include "fileUtil.h"
@@ -28,8 +29,8 @@ LRESULT CALLBACK WindowProc(HWND, UINT, WPARAM, LPARAM);
 void EnableOpenGL(HWND hWnd, HDC*, HGLRC*);
 void DisableOpenGL(HWND, HDC, HGLRC);
 
-const int baseWidth = 800;
-const int baseHeight = 600;
+const int baseWidth = 1200;
+const int baseHeight = 800;
 
 HGLRC hRC = NULL;
 

@@ -30,8 +30,8 @@ const int timeBetweenPhysicsUpdates = 10; // milliseconds
 float dtMs;
 int ms;
 
-MESH* monkey;
-
+MESH* monkeyMesh;
+INSTANCE* monkey;
 
 
 
@@ -42,12 +42,13 @@ void display(CAMERA* c, HDC hdc, HWND hWnd) {  //display function
         ms = frameTick(hWnd);
         dtMs = ms / 1000.0;
         updateFrame(dtMs);
-
         timeSincePhysicsUpdate += ms;
         while (timeSincePhysicsUpdate >= timeBetweenPhysicsUpdates) {
             timeSincePhysicsUpdate -= timeBetweenPhysicsUpdates;
             updateGame(timeBetweenPhysicsUpdates/1000.0);
         }
+
+        monkey->rotation.y += dtMs * (PI / 6.0);
 
         glEnable(GL_CULL_FACE);
         glCullFace(GL_BACK);
@@ -105,7 +106,7 @@ void display(CAMERA* c, HDC hdc, HWND hWnd) {  //display function
         glEnableVertexAttribArray(1);
         glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
-        glDrawArrays(GL_TRIANGLES, 0, monkey->numFaces * 3 * 3);
+        glDrawArrays(GL_TRIANGLES, 0, monkey->mesh->numFaces * 3 * 3);
 
         SwapBuffers(hdc);
     }
@@ -113,7 +114,7 @@ void display(CAMERA* c, HDC hdc, HWND hWnd) {  //display function
 
 void initRenderer(const char* cmd) {
     bp = createBasicProgram();
-
+    monkey = calloc(1, sizeof(INSTANCE));
 
     if (strlen(cmd) > 1) {
         char* betterCmd = calloc(strlen(cmd) + 1, sizeof(char));
@@ -125,46 +126,48 @@ void initRenderer(const char* cmd) {
             }
         }
 
-        monkey = getMeshData(betterCmd);
+        monkeyMesh = getMeshData(betterCmd);
         free(betterCmd);
     } else {
-        monkey = getMeshData("C:\\Users\\dafie\\Desktop\\codeBlocksWorkspace\\GLTesting3\\assets\\models\\monkey.obj");
+        monkeyMesh = getMeshData("C:\\Users\\dafie\\Desktop\\codeBlocksWorkspace\\GLTesting3\\assets\\models\\oem.obj");
     }
+
+
+    float maxSize = 0;
+    for (int i = 0; i < monkeyMesh->numFaces; i++) {
+        vec3 a = *(monkeyMesh->vertsOrdered + i * 3 + 0);
+        vec3 b = *(monkeyMesh->vertsOrdered + i * 3 + 1);
+        vec3 c = *(monkeyMesh->vertsOrdered + i * 3 + 2);
+
+        maxSize = max(maxSize, vec3Magnitude(a));
+        maxSize = max(maxSize, vec3Magnitude(b));
+        maxSize = max(maxSize, vec3Magnitude(c));
+    }
+
+    float s = 100 / maxSize;
 
     camera = calloc(1, sizeof(CAMERA));
     camera->position = (vec3){0, 0, 0};
-    camera->rotation = (vec3){0, 0, 0};
+    camera->rotation = (vec3){-PI/9, 0, 0};
 
-    monkey->position = (vec3){0, 0, -50};
-    monkey->scale = (vec3){12, 12, 12};
-    //monkey->scale = (vec3){.1, .1, .1};
+    monkey->position = (vec3){0, -64, -200};
+    monkey->scale = (vec3){s, s, s};
     monkey->rotation = (vec3){0, -PI/4, 0};
+    monkey->mesh = monkeyMesh;
 
     wglSwapIntervalEXT(1);
 
     glGenVertexArrays(1, &vaoId);
-    checkGLError("glGenVertexArrays");
 
     glBindVertexArray(vaoId);
-    checkGLError("glBindVertexArray");
 
     glGenBuffers(2, vboId);
-    checkGLError("glGenBuffers");
-
-    //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vboId[1]);
-    //checkGLError("glBindBuffer0");
-    //glBufferData(GL_ELEMENT_ARRAY_BUFFER, monkey->numFaces * 3 * sizeof(int), monkey->faces, GL_STATIC_DRAW);
-    //checkGLError("glBufferIndices");
 
     glBindBuffer(GL_ARRAY_BUFFER, vboId[0]);
-    checkGLError("glBindBuffer1");
-    glBufferData(GL_ARRAY_BUFFER, monkey->numFaces * sizeof(float) * 3 * 3, monkey->vertsOrdered, GL_STATIC_DRAW);
-    checkGLError("glBufferData");
+    glBufferData(GL_ARRAY_BUFFER, monkey->mesh->numFaces * sizeof(float) * 3 * 3, monkey->mesh->vertsOrdered, GL_STATIC_DRAW);
 
     glBindBuffer(GL_ARRAY_BUFFER, vboId[1]);
-    checkGLError("glBindBuffer1");
-    glBufferData(GL_ARRAY_BUFFER, monkey->numFaces * sizeof(float) * 3 * 3, monkey->normalsOrdered, GL_STATIC_DRAW);
-    checkGLError("glBufferData");
+    glBufferData(GL_ARRAY_BUFFER, monkey->mesh->numFaces * sizeof(float) * 3 * 3, monkey->mesh->normalsOrdered, GL_STATIC_DRAW);
 
     const char* v = (const char*)glGetString(GL_VERSION);
     print("version: %s\n", v);

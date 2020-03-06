@@ -219,20 +219,15 @@ MESH* getMeshData(const char* meshName) {
         }
     }
 
-
-
-    //print("%i, %i, %i, %i\n", numTextures, numNormals, numVerts, numFaces);
-
-    mesh->faces = calloc(numFaces * 3, sizeof(int)); // 3 is number of verts per face (3 vec3s)
     mesh->verts = calloc(numVerts, sizeof(vec3));
-    mesh->texCoords = calloc(numTextures, sizeof(vec2));
+    mesh->texCoordsOrdered = calloc(numTextures, sizeof(vec2));
     mesh->normals = calloc(numNormals, sizeof(vec3));
     mesh->numVerts = numVerts;
     mesh->numFaces = numFaces;
     mesh->normalsOrdered = calloc(numFaces * 3 * 2, sizeof(vec3));
     mesh->vertsOrdered = calloc(numFaces * 3 * 2, sizeof(vec3));
 
-    int vertIndex = 0, normalIndex = 0, textureIndex = 0, faceIndex = 0;
+    int vertIndex = 0, normalIndex = 0, textureIndex = 0;
     int orderIndex = 0;
     for (int i = 0; i < fd->numLines; i++) {
         char* line = *(fd->lines + i);

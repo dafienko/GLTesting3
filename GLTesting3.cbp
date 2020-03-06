@@ -56,6 +56,9 @@
 		</Unit>
 		<Unit filename="glMath.h" />
 		<Unit filename="glext.h" />
+		<Unit filename="icon.rc">
+			<Option compilerVar="WINDRES" />
+		</Unit>
 		<Unit filename="keyboard.c">
 			<Option compilerVar="CC" />
 		</Unit>

@@ -2,6 +2,14 @@
 
 #include "ghettoWin.h"
 #include "glMath.h"
+#include "fileUtil.h"
+
+typedef struct instance {
+    MESH* mesh;
+    vec3 position;
+    vec3 rotation;
+    vec3 scale;
+} INSTANCE;
 
 typedef struct camera {
     vec3 position;
