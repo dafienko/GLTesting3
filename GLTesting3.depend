@@ -100,7 +100,7 @@
 	"ghettoWin.h"
 	<KHR/khrplatform.h>
 
-1583099181 source:d:\codeblocksworkspace\gltesting3\consoleutil.c
+1583538692 source:d:\codeblocksworkspace\gltesting3\consoleutil.c
 	"ghettoWin.h"
 	<string.h>
 	<stdio.h>
@@ -108,11 +108,11 @@
 	<stdlib.h>
 	"consoleUtil.h"
 
-1583032780 d:\codeblocksworkspace\gltesting3\consoleutil.h
+1583036380 d:\codeblocksworkspace\gltesting3\consoleutil.h
 	"ghettoWin.h"
 	<stdarg.h>
 
-1583282247 source:d:\codeblocksworkspace\gltesting3\fileutil.c
+1583538692 source:d:\codeblocksworkspace\gltesting3\fileutil.c
 	<stdio.h>
 	<stdlib.h>
 	<string.h>
@@ -120,31 +120,32 @@
 	"fileUtil.h"
 	"consoleUtil.h"
 
-1583282247 d:\codeblocksworkspace\gltesting3\fileutil.h
+1583538899 d:\codeblocksworkspace\gltesting3\fileutil.h
 	<stdio.h>
 	"glMath.h"
 
-1583100569 source:d:\codeblocksworkspace\gltesting3\glextensions.c
+1583720966 source:d:\codeblocksworkspace\gltesting3\glextensions.c
 	"glExtensions.h"
 	"ghettoWin.h"
 	<gl/gl.h>
 	"consoleUtil.h"
 
-1583100273 d:\codeblocksworkspace\gltesting3\glextensions.h
+1583721672 d:\codeblocksworkspace\gltesting3\glextensions.h
 	"ghettoWin.h"
 	"glext.h"
 	"wglext.h"
 
-1583032780 d:\codeblocksworkspace\gltesting3\glext.h
+1583036380 d:\codeblocksworkspace\gltesting3\glext.h
 	<gl/gl.h>
 	"ghettoWin.h"
 	<KHR/khrplatform.h>
 
-1583097704 source:d:\codeblocksworkspace\gltesting3\main.c
+1583538692 source:d:\codeblocksworkspace\gltesting3\main.c
 	<stdio.h>
 	"ghettoWin.h"
 	<winuser.h>
 	<gl/gl.h>
+	<stdlib.h>
 	"shaderUtil.h"
 	"fileUtil.h"
 	"renderer.h"
@@ -154,19 +155,21 @@
 	"game.h"
 	"mouse.h"
 
-1582509941 d:\codeblocksworkspace\gltesting3\shaderutil.h
+1582513541 d:\codeblocksworkspace\gltesting3\shaderutil.h
 
-1583282247 d:\codeblocksworkspace\gltesting3\renderer.h
+1583538692 d:\codeblocksworkspace\gltesting3\renderer.h
 	"ghettoWin.h"
 	"glMath.h"
+	"fileUtil.h"
 
-1583285143 source:d:\codeblocksworkspace\gltesting3\renderer.c
+1583721676 source:d:\codeblocksworkspace\gltesting3\renderer.c
 	<stdio.h>
 	<stdlib.h>
 	"ghettoWin.h"
 	<sys/timeb.h>
 	<time.h>
 	<gl/gl.h>
+	"glMath.h"
 	"renderer.h"
 	"glExtensions.h"
 	"shaderUtil.h"
@@ -174,10 +177,11 @@
 	"consoleUtil.h"
 	"game.h"
 
-1583032780 source:d:\codeblocksworkspace\gltesting3\shaderutil.c
+1583538692 source:d:\codeblocksworkspace\gltesting3\shaderutil.c
 	<stdio.h>
 	"ghettoWin.h"
 	<gl/gl.h>
+	<stdlib.h>
 	"glExtensions.h"
 	"fileUtil.h"
 	"shaderUtil.h"
@@ -188,7 +192,7 @@
 	<inttypes.h>
 	<stdint.h>
 
-1583032780 d:\codeblocksworkspace\gltesting3\wglext.h
+1583036380 d:\codeblocksworkspace\gltesting3\wglext.h
 	<windows.h>
 
 1582746912 c:\users\dafie\desktop\codeblocksworkspace\gltesting3\wglext.h
@@ -204,17 +208,17 @@
 1583531264 c:\users\dafie\desktop\codeblocksworkspace\gltesting3\glmath.h
 	"consoleUtil.h"
 
-1583282247 source:d:\codeblocksworkspace\gltesting3\glmath.c
+1583285847 source:d:\codeblocksworkspace\gltesting3\glmath.c
 	"glMath.h"
 	<math.h>
 	<stdio.h>
 	<stdlib.h>
 	"consoleUtil.h"
 
-1582509839 d:\codeblocksworkspace\gltesting3\glmath.h
+1582513439 d:\codeblocksworkspace\gltesting3\glmath.h
 	"consoleUtil.h"
 
-1583282247 source:d:\codeblocksworkspace\gltesting3\game.c
+1583538692 source:d:\codeblocksworkspace\gltesting3\game.c
 	"ghettoWin.h"
 	<math.h>
 	"glMath.h"
@@ -225,21 +229,21 @@
 	"mouse.h"
 	"fileUtil.h"
 
-1582509902 d:\codeblocksworkspace\gltesting3\game.h
+1582513502 d:\codeblocksworkspace\gltesting3\game.h
 
-1582509922 d:\codeblocksworkspace\gltesting3\keyboard.h
+1582513522 d:\codeblocksworkspace\gltesting3\keyboard.h
 
-1583282247 source:d:\codeblocksworkspace\gltesting3\keyboard.c
+1583538692 source:d:\codeblocksworkspace\gltesting3\keyboard.c
 	"ghettoWin.h"
 	"keyboard.h"
 	"consoleUtil.h"
 	<stdlib.h>
 
-1583282247 source:d:\codeblocksworkspace\gltesting3\mouse.c
+1583285847 source:d:\codeblocksworkspace\gltesting3\mouse.c
 	"mouse.h"
 	"windows.h"
 
-1583032780 d:\codeblocksworkspace\gltesting3\mouse.h
+1583036380 d:\codeblocksworkspace\gltesting3\mouse.h
 	"glMath.h"
 
 1583531398 source:c:\users\dafie\desktop\codeblocksworkspace\gltesting3\game.c
@@ -273,8 +277,10 @@
 1582747055 c:\users\dafie\desktop\codeblocksworkspace\gltesting3\ghettowin.h
 	<windows.h>
 
-1583032780 d:\codeblocksworkspace\gltesting3\ghettowin.h
+1583036380 d:\codeblocksworkspace\gltesting3\ghettowin.h
 	<windows.h>
 
 1583501603 source:c:\users\dafie\desktop\codeblocksworkspace\gltesting3\icon.rc
+
+1583538692 source:d:\codeblocksworkspace\gltesting3\icon.rc
 

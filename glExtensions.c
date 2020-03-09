@@ -70,5 +70,6 @@ void GLEInit() {
     glUniformMatrix4fv = (PFNGLUNIFORMMATRIX4FVPROC)getProc("glUniformMatrix4fv");
     glGetUniformLocation = (PFNGLGETUNIFORMLOCATIONPROC)getProc("glGetUniformLocation");
     glUniform3f = (PFNGLUNIFORM3FPROC) getProc("glUniform3f");
+    glUniform1i = (PFNGLUNIFORM1IPROC) getProc("glUniform1i");
     initialized = 1;
 }

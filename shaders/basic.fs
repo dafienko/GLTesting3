@@ -3,9 +3,12 @@
 uniform vec3 cameraPos;
 uniform vec3 scale;
 uniform vec3 modelPos;
+uniform int wireframeEnabled;
+uniform vec3 wireframeColor;
 
 in vec3 norm;
 in vec3 worldPos;
+in vec3 bCentric;
 
 out vec4 color;
 
@@ -15,21 +18,27 @@ float SHININESS = 16;
 vec4 AMBIENT = vec4(0, .2, .2, 0);
 
 void main(void) {
-	vec3 camDir = normalize(worldPos - cameraPos); // direction vector from camera to position
-	float lightAngle = max(0, dot(-lightDir, norm)); 
-	float camAngle = acos(min(dot(norm, camDir), 1));
-	
-	float diffuse = lightAngle;
 
-	
-	float specular = 0;
-	if (dot(-lightDir, norm) > 0); {
-		vec3 v = (cameraPos - worldPos);
-		vec3 h = normalize(lightDir + v);
-		float specAngle = max(0, dot(h, reflect(lightDir, norm)));
-		specular = pow(specAngle, SHININESS); 
+	if (wireframeEnabled == 0 || min(bCentric.x, min(bCentric.y, bCentric.z)) > .01) {
+		vec3 camDir = normalize(worldPos - cameraPos); // direction vector from camera to position
+		float lightAngle = max(0, dot(-lightDir, norm)); 
+		float camAngle = acos(min(dot(norm, camDir), 1));
+		
+		float diffuse = lightAngle;
+
+		
+		float specular = 0;
+		if (dot(-lightDir, norm) > 0); {
+			vec3 v = (cameraPos - worldPos);
+			vec3 h = normalize(lightDir + v);
+			float specAngle = max(0, dot(h, reflect(lightDir, norm)));
+			specular = pow(specAngle, SHININESS); 
+		}
+		
+		//specular = 0;
+		color = AMBIENT + vec4(specular, min(diffuse + specular, 1), min(diffuse + specular, 1), 0);
+		//color = vec4(bCentric, 0);
+	} else {
+		color = vec4(wireframeColor, 0);
 	}
-	
-	//specular = 0;
-	color = AMBIENT + vec4(specular, min(diffuse + specular, 1), min(diffuse + specular, 1), 0);
 }

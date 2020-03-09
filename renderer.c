@@ -14,11 +14,11 @@
 #include "game.h"
 
 GLuint bp = 0;
-GLuint vboId[2];
+GLuint vboId[6];
 GLuint vaoId = 0;
 
 //uniforms
-GLint projLoc, mvLoc, camposLoc, modelposLoc, scaleLoc, mLoc;
+GLint projLoc, mvLoc, camposLoc, modelposLoc, scaleLoc, mLoc, wfColLoc, wfEnabledLoc;
 
 #define tPos 1
 #define yOff 1
@@ -66,6 +66,9 @@ void display(CAMERA* c, HDC hdc, HWND hWnd) {  //display function
         modelposLoc = glGetUniformLocation(bp, "modelPos");
         scaleLoc = glGetUniformLocation(bp, "scale");
         mLoc = glGetUniformLocation(bp, "m_matrix");
+        wfColLoc = glGetUniformLocation(bp, "wireframeColor");
+        wfEnabledLoc = glGetUniformLocation(bp, "wireframeEnabled");
+
 
         glUseProgram(bp);
 
@@ -92,9 +95,17 @@ void display(CAMERA* c, HDC hdc, HWND hWnd) {  //display function
         glUniformMatrix4fv(mvLoc, 1, GL_FALSE, vals);
         free(vals);
 
+        ms = GetTickCount();
+        vec3 wfColor = (vec3){(sin(ms/500.0) + 1.0) * .5, (sin(ms/500.0) + 1.0) * .5, 1};
         glUniform3f(camposLoc, c->position.x, c->position.y, c->position.z);
         glUniform3f(modelposLoc, monkey->position.x, monkey->position.y, monkey->position.z);
         glUniform3f(scaleLoc, monkey->scale.x, monkey->scale.y, monkey->scale.z);
+        glUniform3f(wfColLoc, wfColor.x, wfColor.y, wfColor.z);
+
+
+        glUniform1i(wfEnabledLoc, isKeyDown(0x46)); // f
+
+
 
         glBindVertexArray(vaoId);
 
@@ -105,6 +116,10 @@ void display(CAMERA* c, HDC hdc, HWND hWnd) {  //display function
         glBindBuffer(GL_ARRAY_BUFFER, vboId[1]);
         glEnableVertexAttribArray(1);
         glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+        glBindBuffer(GL_ARRAY_BUFFER, vboId[2]);
+        glEnableVertexAttribArray(2);
+        glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
         glDrawArrays(GL_TRIANGLES, 0, monkey->mesh->numFaces * 3 * 3);
 
@@ -129,7 +144,7 @@ void initRenderer(const char* cmd) {
         monkeyMesh = getMeshData(betterCmd);
         free(betterCmd);
     } else {
-        monkeyMesh = getMeshData("C:\\Users\\dafie\\Desktop\\codeBlocksWorkspace\\GLTesting3\\assets\\models\\oem.obj");
+        monkeyMesh = getMeshData("D:\\codeBlocksWorkspace\\GLTesting3\\assets\\models\\oem.obj");
     }
 
 
@@ -161,17 +176,26 @@ void initRenderer(const char* cmd) {
 
     glBindVertexArray(vaoId);
 
-    glGenBuffers(2, vboId);
+    glGenBuffers(3, vboId);
 
     glBindBuffer(GL_ARRAY_BUFFER, vboId[0]);
-    glBufferData(GL_ARRAY_BUFFER, monkey->mesh->numFaces * sizeof(float) * 3 * 3, monkey->mesh->vertsOrdered, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, monkey->mesh->numFaces * sizeof(vec3) * 3, monkey->mesh->vertsOrdered, GL_STATIC_DRAW);
 
     glBindBuffer(GL_ARRAY_BUFFER, vboId[1]);
-    glBufferData(GL_ARRAY_BUFFER, monkey->mesh->numFaces * sizeof(float) * 3 * 3, monkey->mesh->normalsOrdered, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, monkey->mesh->numFaces * sizeof(vec3) * 3, monkey->mesh->normalsOrdered, GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ARRAY_BUFFER, vboId[2]);
+    vec3* bCentric = calloc(monkey->mesh->numFaces * 3, sizeof(vec3));
+    for (int i = 0; i < monkey->mesh->numFaces; i++) {
+        *(bCentric + i * 3 + 0) = (vec3){1, 0, 0};
+        *(bCentric + i * 3 + 1) = (vec3){0, 1, 0};
+        *(bCentric + i * 3 + 2) = (vec3){0, 0, 1};
+    }
+
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vec3) * monkey->mesh->numFaces * 3, bCentric, GL_STATIC_DRAW);
 
     const char* v = (const char*)glGetString(GL_VERSION);
     print("version: %s\n", v);
-    //*/
 }
 
 void updateSize(int w, int h) {

@@ -2,6 +2,7 @@
 
 layout (location=0) in vec3 position;
 layout (location=1) in vec3 normal;
+layout (location=2) in vec3 bCentricPos;
 
 uniform vec3 cameraPos;
 uniform vec3 scale;
@@ -12,6 +13,7 @@ uniform mat4 m_matrix;
 
 out vec3 norm;
 out vec3 worldPos;
+out vec3 bCentric;
 
 vec3 lightDir = normalize(vec3(-1, -1, -1));
 
@@ -20,6 +22,7 @@ vec3 lightDir = normalize(vec3(-1, -1, -1));
 void main(void) {
 	norm = (m_matrix * vec4(normal, 0)).xyz;
 	worldPos = (m_matrix * vec4(position * scale, 1)).xyz; // world position
+	bCentric =  bCentricPos;
 	
 	gl_Position = proj_matrix * mv_matrix * vec4(position * scale, 1.0);
 }
