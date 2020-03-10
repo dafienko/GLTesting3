@@ -3,7 +3,8 @@
 #include <stdio.h>
 #include "glMath.h"
 
-#define installDirectory "D:\\CodeBlocksWorkspace\\GLTesting3\\"
+//#define installDirectory "D:\\CodeBlocksWorkspace\\GLTesting3\\"
+#define installDirectory "C:\\Users\\dafie\\Desktop\\codeBlocksWorkspace\\GLTesting3\\"
 
 typedef struct mesh {
     vec3* verts;

@@ -106,6 +106,12 @@ void updateGame(float dt) {
         camera->rotation.y += dt * sensitivity * 10;
     }
 
-
+    drawMode = DM_FACE;
+    if (isKeyDown(0x46)) {// f
+        drawMode = DM_FACEANDLINE;
+    }
+    if (isKeyDown(0x47)) {// g
+        drawMode = DM_LINE;
+    }
 }
 

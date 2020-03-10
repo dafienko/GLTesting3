@@ -1,14 +1,24 @@
 #pragma once
+#include <gl/gl.h>
 
 #include "ghettoWin.h"
 #include "glMath.h"
 #include "fileUtil.h"
+
+#define DM_FACE 0
+#define DM_FACEANDLINE 1
+#define DM_LINE 2
+
+int drawMode;
 
 typedef struct instance {
     MESH* mesh;
     vec3 position;
     vec3 rotation;
     vec3 scale;
+    float transparency;
+    GLuint vao;
+    GLuint vbo[2];
 } INSTANCE;
 
 typedef struct camera {

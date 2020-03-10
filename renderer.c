@@ -4,7 +4,9 @@
 #include <sys/timeb.h>
 #include <time.h>
 #include <gl/gl.h>
+#include <math.h>
 
+#include "keyboard.h"
 #include "glMath.h"
 #include "renderer.h"
 #include "glExtensions.h"
@@ -18,7 +20,7 @@ GLuint vboId[6];
 GLuint vaoId = 0;
 
 //uniforms
-GLint projLoc, mvLoc, camposLoc, modelposLoc, scaleLoc, mLoc, wfColLoc, wfEnabledLoc;
+GLint projLoc, mvLoc, camposLoc, modelposLoc, scaleLoc, mLoc, wfColLoc, wfEnabledLoc, transparencyLoc;
 
 #define tPos 1
 #define yOff 1
@@ -33,7 +35,8 @@ int ms;
 MESH* monkeyMesh;
 INSTANCE* monkey;
 
-
+void drawInstance(INSTANCE*, mat4, int);
+INSTANCE* setupInstance(const char* );
 
 
 int displayEnabled = 1; // for use with debugging shaders
@@ -50,8 +53,11 @@ void display(CAMERA* c, HDC hdc, HWND hWnd) {  //display function
 
         monkey->rotation.y += dtMs * (PI / 6.0);
 
-        glEnable(GL_CULL_FACE);
-        glCullFace(GL_BACK);
+
+
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
         glEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_LESS);
 
@@ -68,68 +74,56 @@ void display(CAMERA* c, HDC hdc, HWND hWnd) {  //display function
         mLoc = glGetUniformLocation(bp, "m_matrix");
         wfColLoc = glGetUniformLocation(bp, "wireframeColor");
         wfEnabledLoc = glGetUniformLocation(bp, "wireframeEnabled");
-
+        transparencyLoc = glGetUniformLocation(bp, "transparency");
 
         glUseProgram(bp);
+
+        ms = GetTickCount();
+        vec3 wfColor = (vec3){(sin(ms/500.0) + 1.0) * .5, (sin(ms/500.0) + 1.0) * .5, 1};
+        glUniform3f(camposLoc, c->position.x, c->position.y, c->position.z);
 
         float* vals = getVals(perspectiveMat);
         glUniformMatrix4fv(projLoc, 1, GL_FALSE, vals);
         free(vals);
 
-        mat4 vMat = fromPositionAndRotation(inverseVec3(c->position), inverseVec3(c->rotation));
-        mat4 mMat = rotateXYZ(monkey->rotation.x, monkey->rotation.y, monkey->rotation.z);
-        mMat.d = monkey->position.x;
-        mMat.h = monkey->position.y;
-        mMat.l = monkey->position.z;
-
-
-        mat4 mvMat = mulMat(mulMat(identityMatrix, vMat), mMat);
-        //mat4 mvMat = mulMat(mulMat(identityMatrix, mMat), vMat);
-
-
-        vals = getVals(mMat);
-        glUniformMatrix4fv(mLoc, 1, GL_FALSE, vals);
-        free(vals);
-
-        vals = getVals(mvMat);
-        glUniformMatrix4fv(mvLoc, 1, GL_FALSE, vals);
-        free(vals);
-
-        ms = GetTickCount();
-        vec3 wfColor = (vec3){(sin(ms/500.0) + 1.0) * .5, (sin(ms/500.0) + 1.0) * .5, 1};
-        glUniform3f(camposLoc, c->position.x, c->position.y, c->position.z);
-        glUniform3f(modelposLoc, monkey->position.x, monkey->position.y, monkey->position.z);
-        glUniform3f(scaleLoc, monkey->scale.x, monkey->scale.y, monkey->scale.z);
         glUniform3f(wfColLoc, wfColor.x, wfColor.y, wfColor.z);
 
+        mat4 vMat = fromPositionAndRotation(inverseVec3(c->position), inverseVec3(c->rotation));
 
-        glUniform1i(wfEnabledLoc, isKeyDown(0x46)); // f
+        switch(drawMode) {
+        case DM_FACE:
+            glEnable(GL_CULL_FACE);
+            glCullFace(GL_BACK);
+            glUniform1i(wfEnabledLoc, 0);
+            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+            drawInstance(monkey, vMat, 1);
+            break;
+        case DM_FACEANDLINE:
+            glEnable(GL_CULL_FACE);
+            glCullFace(GL_BACK);
+            glUniform1i(wfEnabledLoc, 0);
+            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+            drawInstance(monkey, vMat, 1);
+        case DM_LINE:
+            glDisable(GL_CULL_FACE);
+            glUniform1i(wfEnabledLoc, 1);
+            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+            glDepthFunc(GL_LEQUAL);
+            drawInstance(monkey, vMat, 0);
 
+            break;
 
+        }
 
-        glBindVertexArray(vaoId);
-
-        glBindBuffer(GL_ARRAY_BUFFER, vboId[0]);
-        glEnableVertexAttribArray(0);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
-
-        glBindBuffer(GL_ARRAY_BUFFER, vboId[1]);
-        glEnableVertexAttribArray(1);
-        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
-
-        glBindBuffer(GL_ARRAY_BUFFER, vboId[2]);
-        glEnableVertexAttribArray(2);
-        glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, 0);
-
-        glDrawArrays(GL_TRIANGLES, 0, monkey->mesh->numFaces * 3 * 3);
 
         SwapBuffers(hdc);
     }
 }
 
 void initRenderer(const char* cmd) {
+    drawMode = DM_FACE;
+
     bp = createBasicProgram();
-    monkey = calloc(1, sizeof(INSTANCE));
 
     if (strlen(cmd) > 1) {
         char* betterCmd = calloc(strlen(cmd) + 1, sizeof(char));
@@ -141,58 +135,19 @@ void initRenderer(const char* cmd) {
             }
         }
 
-        monkeyMesh = getMeshData(betterCmd);
+        monkey = setupInstance(betterCmd);
         free(betterCmd);
     } else {
-        monkeyMesh = getMeshData("D:\\codeBlocksWorkspace\\GLTesting3\\assets\\models\\oem.obj");
+        char fb[100];
+        sprintf(fb, "%sassets\\models\\oem.obj", installDirectory);
+        monkey = setupInstance(fb);
     }
-
-
-    float maxSize = 0;
-    for (int i = 0; i < monkeyMesh->numFaces; i++) {
-        vec3 a = *(monkeyMesh->vertsOrdered + i * 3 + 0);
-        vec3 b = *(monkeyMesh->vertsOrdered + i * 3 + 1);
-        vec3 c = *(monkeyMesh->vertsOrdered + i * 3 + 2);
-
-        maxSize = max(maxSize, vec3Magnitude(a));
-        maxSize = max(maxSize, vec3Magnitude(b));
-        maxSize = max(maxSize, vec3Magnitude(c));
-    }
-
-    float s = 100 / maxSize;
 
     camera = calloc(1, sizeof(CAMERA));
     camera->position = (vec3){0, 0, 0};
     camera->rotation = (vec3){-PI/9, 0, 0};
 
-    monkey->position = (vec3){0, -64, -200};
-    monkey->scale = (vec3){s, s, s};
-    monkey->rotation = (vec3){0, -PI/4, 0};
-    monkey->mesh = monkeyMesh;
-
     wglSwapIntervalEXT(1);
-
-    glGenVertexArrays(1, &vaoId);
-
-    glBindVertexArray(vaoId);
-
-    glGenBuffers(3, vboId);
-
-    glBindBuffer(GL_ARRAY_BUFFER, vboId[0]);
-    glBufferData(GL_ARRAY_BUFFER, monkey->mesh->numFaces * sizeof(vec3) * 3, monkey->mesh->vertsOrdered, GL_STATIC_DRAW);
-
-    glBindBuffer(GL_ARRAY_BUFFER, vboId[1]);
-    glBufferData(GL_ARRAY_BUFFER, monkey->mesh->numFaces * sizeof(vec3) * 3, monkey->mesh->normalsOrdered, GL_STATIC_DRAW);
-
-    glBindBuffer(GL_ARRAY_BUFFER, vboId[2]);
-    vec3* bCentric = calloc(monkey->mesh->numFaces * 3, sizeof(vec3));
-    for (int i = 0; i < monkey->mesh->numFaces; i++) {
-        *(bCentric + i * 3 + 0) = (vec3){1, 0, 0};
-        *(bCentric + i * 3 + 1) = (vec3){0, 1, 0};
-        *(bCentric + i * 3 + 2) = (vec3){0, 0, 1};
-    }
-
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vec3) * monkey->mesh->numFaces * 3, bCentric, GL_STATIC_DRAW);
 
     const char* v = (const char*)glGetString(GL_VERSION);
     print("version: %s\n", v);
@@ -230,4 +185,85 @@ int frameTick(HWND hWnd) {
     }
 
     return dt;
+}
+
+INSTANCE* setupInstance(const char* filename) {
+    INSTANCE* inst = calloc(1, sizeof(INSTANCE));
+
+    inst->mesh = getMeshData(filename);
+
+    float maxSize = 0;
+    for (int i = 0; i < inst->mesh->numFaces; i++) {
+        vec3 a = *(inst->mesh->vertsOrdered + i * 3 + 0);
+        vec3 b = *(inst->mesh->vertsOrdered + i * 3 + 1);
+        vec3 c = *(inst->mesh->vertsOrdered + i * 3 + 2);
+
+        maxSize = max(maxSize, vec3Magnitude(a));
+        maxSize = max(maxSize, vec3Magnitude(b));
+        maxSize = max(maxSize, vec3Magnitude(c));
+    }
+
+    float s = 100 / maxSize;
+
+    inst->position = (vec3){0, -64, -200};
+    inst->scale = (vec3){s, s, s};
+    inst->rotation = (vec3){0, -PI/4, 0};
+    inst->transparency = 0;
+
+    glGenVertexArrays(1, &(inst->vao));
+
+    glBindVertexArray(inst->vao);
+
+    glGenBuffers(2, inst->vbo);
+
+    glBindBuffer(GL_ARRAY_BUFFER, inst->vbo[0]);
+    glBufferData(GL_ARRAY_BUFFER, inst->mesh->numFaces * sizeof(vec3) * 3, inst->mesh->vertsOrdered, GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ARRAY_BUFFER, inst->vbo[1]);
+    glBufferData(GL_ARRAY_BUFFER, inst->mesh->numFaces * sizeof(vec3) * 3, inst->mesh->normalsOrdered, GL_STATIC_DRAW);
+
+    return inst;
+}
+
+void drawInstance(INSTANCE* inst, mat4 vMat, int cull) {
+
+    mat4 mMat = rotateXYZ(inst->rotation.x, inst->rotation.y, inst->rotation.z);
+    mMat.d = inst->position.x;
+    mMat.h = inst->position.y;
+    mMat.l = inst->position.z;
+
+    mat4 mvMat = mulMat(mulMat(identityMatrix, vMat), mMat);
+
+    float* vals = getVals(mMat);
+    glUniformMatrix4fv(mLoc, 1, GL_FALSE, vals);
+    free(vals);
+
+    vals = getVals(mvMat);
+    glUniformMatrix4fv(mvLoc, 1, GL_FALSE, vals);
+    free(vals);
+
+    glUniform3f(modelposLoc, inst->position.x, inst->position.y, inst->position.z);
+    glUniform3f(scaleLoc, inst->scale.x, inst->scale.y, inst->scale.z);
+
+    glUniform1f(transparencyLoc, inst->transparency);
+
+
+    glBindVertexArray(inst->vao);
+
+    glBindBuffer(GL_ARRAY_BUFFER, inst->vbo[0]);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+    glBindBuffer(GL_ARRAY_BUFFER, inst->vbo[1]);
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+    if (inst->transparency == 0 && cull) {
+        glEnable(GL_CULL_FACE);
+        glCullFace(GL_BACK);
+    } else {
+        glDisable(GL_CULL_FACE);
+    }
+
+    glDrawArrays(GL_TRIANGLES, 0, inst->mesh->numFaces * 3 * 3);
 }
