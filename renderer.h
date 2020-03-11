@@ -40,3 +40,4 @@ void updateSize(int width, int height);
 int frameTick(HWND);
 void display(CAMERA*, HDC, HWND);
 void initRenderer(const char*);
+INSTANCE* createInstanceFromFile(const char* );

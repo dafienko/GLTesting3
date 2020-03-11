@@ -36,7 +36,6 @@ MESH* monkeyMesh;
 INSTANCE* monkey;
 
 void drawInstance(INSTANCE*, mat4, int);
-INSTANCE* setupInstance(const char* );
 
 
 int displayEnabled = 1; // for use with debugging shaders
@@ -51,9 +50,10 @@ void display(CAMERA* c, HDC hdc, HWND hWnd) {  //display function
             updateGame(timeBetweenPhysicsUpdates/1000.0);
         }
 
-        monkey->rotation.y += dtMs * (PI / 6.0);
+        monkey->rotation.y += dtMs * (PI / 12.0);
 
-
+        glEnable(GL_LINE_SMOOTH);
+        glEnable(GL_POLYGON_SMOOTH);
 
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -89,6 +89,8 @@ void display(CAMERA* c, HDC hdc, HWND hWnd) {  //display function
         glUniform3f(wfColLoc, wfColor.x, wfColor.y, wfColor.z);
 
         mat4 vMat = fromPositionAndRotation(inverseVec3(c->position), inverseVec3(c->rotation));
+
+        glLineWidth(2);
 
         switch(drawMode) {
         case DM_FACE:
@@ -135,12 +137,12 @@ void initRenderer(const char* cmd) {
             }
         }
 
-        monkey = setupInstance(betterCmd);
+        monkey = createInstanceFromFile(betterCmd);
         free(betterCmd);
     } else {
         char fb[100];
-        sprintf(fb, "%sassets\\models\\oem.obj", installDirectory);
-        monkey = setupInstance(fb);
+        sprintf(fb, "%sassets\\models\\sphere.obj", installDirectory);
+        monkey = createInstanceFromFile(fb);
     }
 
     camera = calloc(1, sizeof(CAMERA));
@@ -187,7 +189,7 @@ int frameTick(HWND hWnd) {
     return dt;
 }
 
-INSTANCE* setupInstance(const char* filename) {
+INSTANCE* createInstanceFromFile(const char* filename) {
     INSTANCE* inst = calloc(1, sizeof(INSTANCE));
 
     inst->mesh = getMeshData(filename);
