@@ -6,6 +6,7 @@
 #include <gl/gl.h>
 #include <math.h>
 
+
 #include "keyboard.h"
 #include "glMath.h"
 #include "renderer.h"
@@ -50,8 +51,6 @@ void display(CAMERA* c, HDC hdc, HWND hWnd) {  //display function
             updateGame(timeBetweenPhysicsUpdates/1000.0);
         }
 
-        monkey->rotation.y += dtMs * (PI / 12.0);
-
         glEnable(GL_LINE_SMOOTH);
         glEnable(GL_POLYGON_SMOOTH);
 
@@ -92,6 +91,8 @@ void display(CAMERA* c, HDC hdc, HWND hWnd) {  //display function
 
         glLineWidth(2);
 
+        monkey->position = (vec3){0, 0, -zoom};
+
         switch(drawMode) {
         case DM_FACE:
             glEnable(GL_CULL_FACE);
@@ -123,6 +124,10 @@ void display(CAMERA* c, HDC hdc, HWND hWnd) {  //display function
 }
 
 void initRenderer(const char* cmd) {
+    zoom = 200;
+
+    rx = 0; ry = 0;
+
     drawMode = DM_FACE;
 
     bp = createBasicProgram();
@@ -141,13 +146,13 @@ void initRenderer(const char* cmd) {
         free(betterCmd);
     } else {
         char fb[100];
-        sprintf(fb, "%sassets\\models\\sphere.obj", installDirectory);
+        sprintf(fb, "%sassets\\models\\cube.obj", installDirectory);
         monkey = createInstanceFromFile(fb);
     }
 
     camera = calloc(1, sizeof(CAMERA));
     camera->position = (vec3){0, 0, 0};
-    camera->rotation = (vec3){-PI/9, 0, 0};
+    camera->rotation = (vec3){0, 0, 0};
 
     wglSwapIntervalEXT(1);
 
@@ -207,9 +212,9 @@ INSTANCE* createInstanceFromFile(const char* filename) {
 
     float s = 100 / maxSize;
 
-    inst->position = (vec3){0, -64, -200};
+    inst->position = (vec3){0, 0, -zoom};
     inst->scale = (vec3){s, s, s};
-    inst->rotation = (vec3){0, -PI/4, 0};
+    inst->rotation = (vec3){0, 0, 0};
     inst->transparency = 0;
 
     glGenVertexArrays(1, &(inst->vao));
@@ -233,6 +238,10 @@ void drawInstance(INSTANCE* inst, mat4 vMat, int cull) {
     mMat.d = inst->position.x;
     mMat.h = inst->position.y;
     mMat.l = inst->position.z;
+
+    mat4 rMat = rotateXYZ(rx, ry, 0);
+    mMat = mulMat(mMat, rMat);
+
 
     mat4 mvMat = mulMat(mulMat(identityMatrix, vMat), mMat);
 

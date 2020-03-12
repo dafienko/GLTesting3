@@ -9,6 +9,9 @@
 #define DM_FACEANDLINE 1
 #define DM_LINE 2
 
+float rx, ry;
+float zoom;
+
 int drawMode;
 
 typedef struct instance {

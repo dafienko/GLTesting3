@@ -3,8 +3,7 @@
 #include <stdio.h>
 #include "glMath.h"
 
-//#define installDirectory "D:\\CodeBlocksWorkspace\\GLTesting3\\"
-#define installDirectory "C:\\Users\\dafie\\Desktop\\codeBlocksWorkspace\\GLTesting3\\"
+char* installDirectory;
 
 typedef struct mesh {
     vec3* verts;
@@ -22,6 +21,8 @@ typedef struct {
     int* lengths;
 } FILEDATA;
 
+void updatePath();
+void freeSplits(char**); // frees the string array returned from splitstr
 char** strsplit(const char*, const char*); // returns an array of strings by splitting the first string by the second string
 int getFileLength(FILE*); //returns the number of lines in the file
 FILEDATA* getFileData(FILE*); // returns the lines in the file as an array of strings

@@ -2,6 +2,7 @@
 
 #include "glMath.h"
 
+int leftMouseDown;
 int mouseLocked;
 
 void initMouse(HANDLE);

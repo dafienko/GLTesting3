@@ -44,6 +44,8 @@ int WINAPI WinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,LPSTR lpCmdLine,i
     MSG msg;
     BOOL bQuit = FALSE;
 
+    updatePath();
+
     char* fileName = calloc(200, sizeof(char));
     sprintf(fileName, "%sicon.ico", installDirectory);
     HICON icon = LoadImage(hInstance, fileName, IMAGE_ICON, 128, 128, LR_LOADFROMFILE);
@@ -87,9 +89,9 @@ int WINAPI WinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,LPSTR lpCmdLine,i
     Rid[0].hwndTarget = hWnd;
     RegisterRawInputDevices(Rid, 1, sizeof(Rid[0]));
 
-
-    AllocConsole();
-    setHandle(GetStdHandle(STD_OUTPUT_HANDLE));
+    //uncomment the next 2 lines to show console
+    //AllocConsole();
+    //setHandle(GetStdHandle(STD_OUTPUT_HANDLE));
 
     SetWindowsHookEx(WH_MOUSE, (HOOKPROC)MouseProc, NULL, 0);
 
@@ -100,18 +102,14 @@ int WINAPI WinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,LPSTR lpCmdLine,i
     GLEInit();
     initMouse(hWnd);
     initKeyboard();
-    print("initializing renderer\n");
     initRenderer(lpCmdLine);
-    print("done initializing renderer\n");
     updateSize(baseWidth, baseHeight);
-
     initGame();
 
     while (!bQuit)
     {
         if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
         {
-            //print("message\n");
             if (msg.message == WM_QUIT)
             {
                 bQuit = TRUE;
@@ -122,7 +120,6 @@ int WINAPI WinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,LPSTR lpCmdLine,i
                 DispatchMessage(&msg);
             }
         } else {
-            //print("display\n");
             swapKbdBuffer();
             display(camera, hdc, hWnd);
         }
@@ -145,8 +142,19 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
     switch (uMsg)
     {
+        case WM_MOUSEWHEEL:
+            ;
+            int zDelta = GET_WHEEL_DELTA_WPARAM(wParam);
+            zoom += zDelta * zoom/2000.0;
+            break;
+        case WM_LBUTTONDOWN:
+            leftMouseDown = 1;
+            break;
+        case WM_LBUTTONUP:
+            leftMouseDown = 0;
+            break;
         case WM_INPUT:
-            if (mouseLocked) {
+            if (mouseLocked || 1) {
                 UINT dwSize = 40;
                 static BYTE lpb[40];
 
