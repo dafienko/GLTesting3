@@ -36,6 +36,7 @@ void main(void) {
 		}
 		
 		color = AMBIENT + vec4(specular, min(diffuse + specular, 1), min(diffuse + specular, 1), 1 - transparency);
+		color = vec4(1, 0, 0, 0);
 	} else {
 		color = vec4(wireframeColor, 1);
 	}
