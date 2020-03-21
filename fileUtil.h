@@ -3,8 +3,7 @@
 #include <stdio.h>
 #include "glMath.h"
 
-//#define installDirectory "D:\\CodeBlocksWorkspace\\GLTesting3\\"
-#define installDirectory "C:\\Users\\dafie\\Desktop\\codeBlocksWorkspace\\GLTesting3\\"
+char* installDirectory;
 
 typedef struct mesh {
     vec3* verts;
@@ -30,3 +29,4 @@ void freeFileData(FILEDATA*); // frees all the memory in a filedata struct
 void printFileData(FILEDATA*); // prints the filedata struct in a human-readable way
 char* lstrip(const char*); // removes all whitespace left of the first non-whitespace character in a string
 MESH* getMeshData(const char*);
+void updatePath(); // updates the install directory

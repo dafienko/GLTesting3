@@ -44,6 +44,8 @@ int WINAPI WinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,LPSTR lpCmdLine,i
     MSG msg;
     BOOL bQuit = FALSE;
 
+    updatePath();
+
     char* fileName = calloc(200, sizeof(char));
     sprintf(fileName, "%sicon.ico", installDirectory);
     HICON icon = LoadImage(hInstance, fileName, IMAGE_ICON, 128, 128, LR_LOADFROMFILE);

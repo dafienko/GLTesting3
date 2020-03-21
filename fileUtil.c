@@ -322,7 +322,22 @@ MESH* getMeshData(const char* meshName) {
     return mesh;
 }
 
+void updatePath() {
+    char* path = calloc(250, sizeof(char));
+    GetModuleFileName(NULL, path, 250);
+    char** splits = strsplit(path, "\\");
+    int numSplits = -1;
+    for (char** s = splits; *s != 0; s++) {
+        numSplits++;
+    }
 
+    int exeNameLength = strlen(*(splits + numSplits - 1)); // the length of just the exe file name
+    int cutoffIndex = (strlen(path) - exeNameLength);
+    *(path + cutoffIndex) = 0;
+    freeSplits(splits);
+
+    installDirectory = path;
+}
 
 
 
