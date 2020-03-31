@@ -25,8 +25,6 @@ GLint projLoc, mvLoc, camposLoc, modelposLoc, scaleLoc, mLoc, wfColLoc, wfEnable
 #define tPos 1
 #define yOff 1
 
-//ccw = outward normal
-
 int timeSincePhysicsUpdate = 0;
 const int timeBetweenPhysicsUpdates = 10; // milliseconds
 float dtMs;
@@ -42,18 +40,15 @@ int displayEnabled = 1; // for use with debugging shaders
 void display(CAMERA* c, HDC hdc, HWND hWnd) {  //display function
     if (displayEnabled) {
         ms = frameTick(hWnd);
-        dtMs = ms / 1000.0;
+        dtMs = ms / 1000.0; // 1000 ms in one second
         updateFrame(dtMs);
         timeSincePhysicsUpdate += ms;
         while (timeSincePhysicsUpdate >= timeBetweenPhysicsUpdates) {
             timeSincePhysicsUpdate -= timeBetweenPhysicsUpdates;
-            updateGame(timeBetweenPhysicsUpdates/1000.0);
+            updateGame(timeBetweenPhysicsUpdates/1000.0); // 1000 ms in one second
         }
 
         monkey->rotation.y += dtMs * (PI / 12.0);
-
-        glEnable(GL_LINE_SMOOTH);
-        glEnable(GL_POLYGON_SMOOTH);
 
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
