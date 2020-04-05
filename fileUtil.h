@@ -1,5 +1,6 @@
 #pragma once
 
+#include "ghettoWin.h"
 #include <stdio.h>
 #include "glMath.h"
 
@@ -30,3 +31,4 @@ void printFileData(FILEDATA*); // prints the filedata struct in a human-readable
 char* lstrip(const char*); // removes all whitespace left of the first non-whitespace character in a string
 MESH* getMeshData(const char*);
 void updatePath(); // updates the install directory
+HANDLE getBmpHandle(const char*); // loads the given image file name into a win32 image handle

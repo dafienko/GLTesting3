@@ -144,7 +144,7 @@ void initRenderer(const char* cmd) {
     camera->position = (vec3){0, 0, 0};
     camera->rotation = (vec3){-PI/9, 0, 0};
 
-    wglSwapIntervalEXT(1);
+    wglSwapIntervalEXT(0);
 
     const char* v = (const char*)glGetString(GL_VERSION);
     print("version: %s\n", v);
