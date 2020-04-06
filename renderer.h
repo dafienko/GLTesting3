@@ -9,6 +9,8 @@
 #define DM_FACEANDLINE 1
 #define DM_LINE 2
 
+#define MAX_INSTANCES 100
+
 int drawMode;
 
 typedef struct instance {
@@ -19,6 +21,9 @@ typedef struct instance {
     float transparency;
     GLuint vao;
     GLuint vbo[2];
+    struct instance* parent;
+    char* name;
+    int expanded;
 } INSTANCE;
 
 typedef struct camera {
@@ -35,7 +40,10 @@ typedef struct color {
 } color3f;
 
 CAMERA* camera;
+INSTANCE** instances;
 
+int addInstance(INSTANCE* inst);
+void removeInstance(int instanceHandle);
 void updateSize(int width, int height);
 int frameTick(HWND);
 void display(CAMERA*, HDC, HWND);

@@ -32,3 +32,4 @@ char* lstrip(const char*); // removes all whitespace left of the first non-white
 MESH* getMeshData(const char*);
 void updatePath(); // updates the install directory
 HANDLE getBmpHandle(const char*); // loads the given image file name into a win32 image handle
+HANDLE getBmpMask(HBITMAP);

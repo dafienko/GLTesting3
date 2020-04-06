@@ -87,29 +87,33 @@ void display(CAMERA* c, HDC hdc, HWND hWnd) {  //display function
 
         glLineWidth(2);
 
-        switch(drawMode) {
-        case DM_FACE:
-            glEnable(GL_CULL_FACE);
-            glCullFace(GL_BACK);
-            glUniform1i(wfEnabledLoc, 0);
-            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-            drawInstance(monkey, vMat, 1);
-            break;
-        case DM_FACEANDLINE:
-            glEnable(GL_CULL_FACE);
-            glCullFace(GL_BACK);
-            glUniform1i(wfEnabledLoc, 0);
-            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-            drawInstance(monkey, vMat, 1);
-        case DM_LINE:
-            glDisable(GL_CULL_FACE);
-            glUniform1i(wfEnabledLoc, 1);
-            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-            glDepthFunc(GL_LEQUAL);
-            drawInstance(monkey, vMat, 0);
-
-            break;
-
+        int instancesDrawn = 0;
+        for (int i = 0; i < MAX_INSTANCES; i++) {
+            if (*(instances + i) != 0) {
+                INSTANCE* inst = *(instances + i);
+                switch(drawMode) {
+                case DM_FACE:
+                    glEnable(GL_CULL_FACE);
+                    glCullFace(GL_BACK);
+                    glUniform1i(wfEnabledLoc, 0);
+                    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+                    drawInstance(inst, vMat, 1);
+                    break;
+                case DM_FACEANDLINE:
+                    glEnable(GL_CULL_FACE);
+                    glCullFace(GL_BACK);
+                    glUniform1i(wfEnabledLoc, 0);
+                    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+                    drawInstance(inst, vMat, 1);
+                case DM_LINE:
+                    glDisable(GL_CULL_FACE);
+                    glUniform1i(wfEnabledLoc, 1);
+                    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+                    glDepthFunc(GL_LEQUAL);
+                    drawInstance(inst, vMat, 0);
+                    break;
+                }
+            }
         }
 
 
@@ -119,6 +123,8 @@ void display(CAMERA* c, HDC hdc, HWND hWnd) {  //display function
 
 void initRenderer(const char* cmd) {
     drawMode = DM_FACE;
+
+    instances = (INSTANCE**)calloc(sizeof(INSTANCE*), MAX_INSTANCES);
 
     bp = createBasicProgram();
 
@@ -139,6 +145,34 @@ void initRenderer(const char* cmd) {
         sprintf(fb, "%sassets\\models\\sphere.obj", installDirectory);
         monkey = createInstanceFromFile(fb);
     }
+
+    char* name = calloc(sizeof(char), 200);
+
+    sprintf(name, "%sassets\\models\\oem.obj", installDirectory);
+    INSTANCE* oem = createInstanceFromFile(name);
+    oem->position = (vec3){250, 0, 0};
+    oem->name = "OEM";
+    addInstance(oem);
+
+    sprintf(name, "%sassets\\models\\mindbender.obj", installDirectory);
+    INSTANCE* mb = createInstanceFromFile(name);
+    mb->name = "mindbender";
+    mb->position = (vec3){500, 0, 0};
+    addInstance(mb);
+
+    sprintf(name, "%sassets\\models\\monkey.obj", installDirectory);
+    INSTANCE* mon = createInstanceFromFile(name);
+    mon->name = "monkey";
+    mon->position = (vec3){500, 0, 250};
+    addInstance(mon);
+
+    monkey->name = "sphere";
+    mb->parent = oem;
+    mon->parent = oem;
+    monkey->parent = mon;
+
+    free(name);
+    addInstance(monkey);
 
     camera = calloc(1, sizeof(CAMERA));
     camera->position = (vec3){0, 0, 0};
@@ -264,3 +298,28 @@ void drawInstance(INSTANCE* inst, mat4 vMat, int cull) {
 
     glDrawArrays(GL_TRIANGLES, 0, inst->mesh->numFaces * 3 * 3);
 }
+
+int numInstances = 0;
+int addInstance(INSTANCE* inst) {
+    if (numInstances >= MAX_INSTANCES) {
+        return -1;
+    }
+
+    for (int i = 0; i < MAX_INSTANCES; i++) {
+        if (*(instances + i) == NULL) {
+            numInstances++;
+            *(instances + i) = inst;
+            return i;
+        }
+    }
+    return -1;
+}
+
+void removeInstance(int instanceHandle) {
+    numInstances--;
+    *(instances + instanceHandle) = NULL;
+}
+
+
+
+

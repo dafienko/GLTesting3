@@ -340,39 +340,48 @@ void updatePath() {
 }
 
 HANDLE getBmpHandle(const char* fileName) {
-    char* fullPath = calloc(sizeof(char), strlen(fileName) + strlen(installDirectory) + 10);
-    sprintf(fullPath, "%s\\%s", fullPath, fileName);
-    HBITMAP h = (HBITMAP)LoadImage(NULL, fullPath, IMAGE_BITMAP, 0, 0, LR_CREATEDIBSECTION | LR_LOADFROMFILE);
+    char* fullPath = calloc(sizeof(char), strlen(fileName) + strlen(installDirectory) + 50);
+    sprintf(fullPath, "%sassets\\images\\%s", installDirectory, fileName);
+
+    HBITMAP h = (HBITMAP)LoadImageA(NULL, fullPath, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+    if (h == NULL) {
+        int e = GetLastError();
+        print("image failed to load %i %i\n", e, h);
+    }
     return (HANDLE) h;
 }
 
 HANDLE getBmpMask(HBITMAP src) {
-    int width = GetDeviceCaps(src, HORZRES);
-    int height = GetDeviceCaps(src, VERTRES);
-    int widthBytes = width * 3 + (width * 3) % 2; // + x % 2 because scanlines must be word aligned (divisible by 2)
-    unsigned char* pixels = calloc(sizeof(char), widthBytes * height);
+    BITMAP bm;
+    GetObject(src, sizeof(BITMAP), &bm);
+    int width = bm.bmWidth;
+    int height = bm.bmHeight;
+    int widthBytes = width * 4 + (width * 4) % 2; // + x % 2 because scanlines must be word aligned (divisible by 2)
 
+    unsigned char* pixels = calloc(sizeof(char), widthBytes * height);
     GetBitmapBits(src, widthBytes * height, pixels);
 
-    for (int x = 0; x < width; x++) {
-        for (int y = 0; y < height; y++) {
-            unsigned char r = pixels(y * widthBytes + x * 3 + 0);
-            unsigned char g = pixels(y * widthBytes + x * 3 + 1);
-            unsigned char b = pixels(y * widthBytes + x * 3 + 2);
-            if (r == 0 && g == 255 && b == 255) {
-                pixels(y * widthBytes + x * 3 + 0) = 0;
-                pixels(y * widthBytes + x * 3 + 1) = 0;
-                pixels(y * widthBytes + x * 3 + 2) = 0;
+    for (int y = 0; y < height; y++) {
+        for (int x = 0; x < width; x++) {
+            unsigned char r = pixels[y * widthBytes + x * 4 + 0];
+            unsigned char g = pixels[y * widthBytes + x * 4 + 1];
+            unsigned char b = pixels[y * widthBytes + x * 4 + 2];
+
+
+            if (r == 0 && g == 0 && b == 0) {
+                pixels[y * widthBytes + x * 4 + 0] = 255;
+                pixels[y * widthBytes + x * 4 + 1] = 255;
+                pixels[y * widthBytes + x * 4 + 2] = 255;
             } else {
-                pixels(y * widthBytes + x * 3 + 0) = 255;
-                pixels(y * widthBytes + x * 3 + 1) = 255;
-                pixels(y * widthBytes + x * 3 + 2) = 255;
+                pixels[y * widthBytes + x * 4 + 0] = 0;
+                pixels[y * widthBytes + x * 4 + 1] = 0;
+                pixels[y * widthBytes + x * 4 + 2] = 0;
             }
         }
     }
 
 
-    HBITMAP mask = CreateBitmap(width, height, 3, 8 * 3, pixels);
+    HBITMAP mask = CreateBitmap(width, height, bm.bmPlanes, bm.bmBitsPixel, pixels);
     return mask;
 }
 

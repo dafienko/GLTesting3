@@ -61,7 +61,7 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hPrevInstance,LPSTR lpCmdLine,int n
 
     char* fileName = calloc(200, sizeof(char));
     sprintf(fileName, "%sicon.ico", installDirectory);
-    HICON icon = LoadImage(hInstance, fileName, IMAGE_ICON, 128, 128, LR_LOADFROMFILE);
+    HICON icon = LoadImage(hInstance, fileName, IMAGE_ICON, 128, 128, LR_SHARED | LR_LOADFROMFILE);
     free(fileName);
 
     // setup the main window
@@ -85,9 +85,9 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hPrevInstance,LPSTR lpCmdLine,int n
     hierarchyWndClass.cbClsExtra = 0;
     hierarchyWndClass.cbWndExtra = 0;
     hierarchyWndClass.hInstance = hInstance;
-    hierarchyWndClass.hIcon = icon;
+    hierarchyWndClass.hIcon = NULL;
     hierarchyWndClass.hCursor = LoadCursor(NULL, IDC_ARROW);
-    hierarchyWndClass.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
+    hierarchyWndClass.hbrBackground = (HBRUSH)GetStockObject(GRAY_BRUSH);
     hierarchyWndClass.lpszMenuName = NULL;
     hierarchyWndClass.lpszClassName = TEXT("Hierarchy");
     hierarchyWndClass.hIconSm = NULL;
@@ -99,7 +99,7 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hPrevInstance,LPSTR lpCmdLine,int n
     viewportWndClass.cbClsExtra = 0;
     viewportWndClass.cbWndExtra = 0;
     viewportWndClass.hInstance = hInstance;
-    viewportWndClass.hIcon = icon;
+    viewportWndClass.hIcon = NULL;
     viewportWndClass.hCursor = LoadCursor(NULL, IDC_ARROW);
     viewportWndClass.hbrBackground = (HBRUSH)GetStockObject(GRAY_BRUSH);
     viewportWndClass.lpszMenuName = NULL;
@@ -127,6 +127,9 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hPrevInstance,LPSTR lpCmdLine,int n
                           hInstance,
                           NULL);
     hWnd = hMainWnd;
+
+    AllocConsole();
+    setHandle(GetStdHandle(STD_OUTPUT_HANDLE));
 
     ShowWindow(hWnd, SW_SHOW);
     UpdateWindow(hWnd);
@@ -163,9 +166,6 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hPrevInstance,LPSTR lpCmdLine,int n
     Rid[0].dwFlags = RIDEV_INPUTSINK;
     Rid[0].hwndTarget = hMainWnd;
     RegisterRawInputDevices(Rid, 1, sizeof(Rid[0]));
-
-    AllocConsole();
-    setHandle(GetStdHandle(STD_OUTPUT_HANDLE));
 
     SetWindowsHookEx(WH_MOUSE, (HOOKPROC)MouseProc, NULL, 0);
 
@@ -325,14 +325,159 @@ LRESULT MouseProc(int nCode, WPARAM wParam, LPARAM lParam) {
     return CallNextHookEx(NULL, nCode, wParam, lParam);
 }
 
+int tHeight = 24;
+int padding = 5;
+
+HFONT hFont;
+HDC hdcExpandedMask, hdcExpandedSource, hdcCollapsedMask, hdcCollapsedSource;
+HBITMAP hExpandedImage, hExpandedMask, hCollapsedImage, hCollapsedMask;
+
+typedef struct button {
+    RECT rect;
+    int id;
+    void (*callback)(int);
+} BUTTON;
+
+void addButton(BUTTON** buttons, BUTTON* button) {
+    for (int i = 0; i < MAX_INSTANCES; i++) {
+        BUTTON* b = *(buttons + i);
+        if (b == NULL) {
+            *(buttons + i) = button;
+            break;
+        }
+    }
+}
+
+void clearButtons(BUTTON** buttons) {
+    for (int i = 0; i < MAX_INSTANCES; i++) {
+        BUTTON* b = *(buttons + i);
+        if (b != NULL) {
+            free(b);
+        }
+        *(buttons + i) = NULL;
+    }
+}
+
+void hButtonCallback(int id) {
+    INSTANCE* inst = *(instances + id);
+    inst->expanded = !(inst->expanded);
+    InvalidateRect(hHierarchyWnd, NULL, TRUE);
+}
+
+void drawInstanceInHierarchy(HDC hdc, INSTANCE* inst, int x, int y, int instId, BUTTON** buttons) {
+    int imgSize = (int)(tHeight * .8);
+    int imgDiff = tHeight - imgSize;
+    if (!inst->expanded) {
+        StretchBlt(hdc, x, y + imgDiff/2, imgSize, imgSize, hdcCollapsedMask, 0, 0, 100, 100, SRCAND);
+        StretchBlt(hdc, x, y + imgDiff/2, imgSize, imgSize, hdcCollapsedSource, 0, 0, 100, 100, SRCPAINT);
+    } else {
+        StretchBlt(hdc, x, y + imgDiff/2, imgSize, imgSize, hdcExpandedMask, 0, 0, 100, 100, SRCAND);
+        StretchBlt(hdc, x, y + imgDiff/2, imgSize, imgSize, hdcExpandedSource, 0, 0, 100, 100, SRCPAINT);
+    }
+    BUTTON* b = calloc(sizeof(BUTTON), 1);
+    *b = (BUTTON) {(RECT){x, y+imgDiff/2, x+imgSize, y+imgDiff/2+imgSize}, instId, &hButtonCallback};
+    addButton(buttons, b);
+    TextOut(hdc, x + tHeight, y, inst->name, strlen(inst->name));
+}
+
+int drawInstanceChildren(INSTANCE* parent, HDC hdc, BUTTON** buttons, int x, int y) {
+    int height = y;
+    for (int i = 0; i < MAX_INSTANCES; i++) {
+        INSTANCE* inst = *(instances + i);
+        if (inst != NULL && inst->parent == parent) {
+            drawInstanceInHierarchy(hdc, inst, x, height, i, buttons);
+            height += tHeight + padding;
+            if (inst->expanded) {
+                drawInstanceChildren(inst, hdc, buttons, x + 20, height);
+            }
+        }
+    }
+    return height;
+}
+
 LRESULT CALLBACK hierarchyWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
     static RECT rect;
-    ShowWindow(hWnd, SW_SHOW);
+    static PAINTSTRUCT ps;
+    static HDC hdc;
+    static BUTTON** buttons;
+
     switch(msg) {
+        case WM_CREATE:
+            ;
+            hCollapsedImage = getBmpHandle("collapsed3.bmp");
+            hCollapsedMask = getBmpMask(hCollapsedImage);
+            hExpandedImage = getBmpHandle("expanded3.bmp");
+            hExpandedMask = getBmpMask(hExpandedImage);
+
+            hdcCollapsedSource = CreateCompatibleDC(GetDC(hWnd));
+            SelectObject(hdcCollapsedSource, hCollapsedImage);
+
+            hdcCollapsedMask = CreateCompatibleDC(GetDC(hWnd));
+            SelectObject(hdcCollapsedMask, hCollapsedMask);
+
+            hdcExpandedSource = CreateCompatibleDC(GetDC(hWnd));
+            SelectObject(hdcExpandedSource, hExpandedImage);
+
+            hdcExpandedMask = CreateCompatibleDC(GetDC(hWnd));
+            SelectObject(hdcExpandedMask, hExpandedMask);
+
+            buttons = (BUTTON**)calloc(sizeof(BUTTON*), MAX_INSTANCES);
+
+            hFont = CreateFont(tHeight, //                cHeight
+                                         (int)(tHeight/2.5), //              cWidth
+                                         0, //                      cEscapement
+                                         0, //                      cOrientation
+                                         100, //                    cWeight
+                                         FALSE, //                  bItalic
+                                         FALSE, //                  bUnderline
+                                         FALSE, //                  bStrikeout
+                                         DEFAULT_CHARSET,//         iCharSet
+                                         OUT_OUTLINE_PRECIS,//      iOutPrecision
+                                         CLIP_DEFAULT_PRECIS,//     iClipPrecision
+                                         CLEARTYPE_QUALITY, //      iQuality
+                                         FF_DONTCARE,//               iPitchAndFamily
+                                         TEXT("Dubai"));            //pszFaceName
+
+            break;
+
         case WM_SIZE:
             GetClientRect(hMainWnd, &rect);
             MoveWindow(hWnd, 0, 0, 300, rect.bottom, TRUE);
             ShowWindow(hWnd, SW_SHOW);
+            break;
+        case WM_PAINT:
+            if (initialized) {
+                clearButtons(buttons);
+                hdc = BeginPaint(hWnd, &ps);
+                SetBkMode(hdc, TRANSPARENT);
+                SetTextColor(hdc, RGB(255, 255, 255));
+
+                SelectObject(hdc,hFont);
+
+                int height = 10;
+                int x = 10;
+
+                drawInstanceChildren(NULL, hdc, buttons, x, height);
+
+
+                EndPaint(hWnd, &ps);
+            }
+            break;
+        case WM_LBUTTONUP:
+            ;
+            int x = LOWORD(lParam);
+            int y = HIWORD(lParam);
+
+            for (int i = 0; i < MAX_INSTANCES; i++) {
+                BUTTON* b = *(buttons + i);
+                if (b != NULL) {
+                    if (x >= b->rect.left && x <= b->rect.right && y >= b->rect.top && y <= b->rect.bottom) {
+                        (b->callback)(b->id);
+                        break; // only fire one button per click
+                    }
+                }
+            }
+
             break;
         default:
             return DefWindowProc(hWnd, msg, wParam, lParam);
@@ -346,6 +491,8 @@ LRESULT CALLBACK viewportWindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM l
     static HDC hdc;
     static PAINTSTRUCT ps;
     static RECT rect;
+
+
     switch(msg) {
         case WM_SIZE:
             ;
