@@ -91,27 +91,30 @@ void display(CAMERA* c, HDC hdc, HWND hWnd) {  //display function
         for (int i = 0; i < MAX_INSTANCES; i++) {
             if (*(instances + i) != 0) {
                 INSTANCE* inst = *(instances + i);
-                switch(drawMode) {
-                case DM_FACE:
-                    glEnable(GL_CULL_FACE);
-                    glCullFace(GL_BACK);
-                    glUniform1i(wfEnabledLoc, 0);
-                    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-                    drawInstance(inst, vMat, 1);
-                    break;
-                case DM_FACEANDLINE:
-                    glEnable(GL_CULL_FACE);
-                    glCullFace(GL_BACK);
-                    glUniform1i(wfEnabledLoc, 0);
-                    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-                    drawInstance(inst, vMat, 1);
-                case DM_LINE:
+                if (drawMode == DM_LINE) {
                     glDisable(GL_CULL_FACE);
                     glUniform1i(wfEnabledLoc, 1);
                     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
                     glDepthFunc(GL_LEQUAL);
                     drawInstance(inst, vMat, 0);
-                    break;
+                } else if (drawMode == DM_FACEANDLINE || inst->selected) {
+                    glEnable(GL_CULL_FACE);
+                    glCullFace(GL_BACK);
+                    glUniform1i(wfEnabledLoc, 0);
+                    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+                    drawInstance(inst, vMat, 1);
+
+                    glDisable(GL_CULL_FACE);
+                    glUniform1i(wfEnabledLoc, 1);
+                    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+                    glDepthFunc(GL_LEQUAL);
+                    drawInstance(inst, vMat, 0);
+                } else {
+                    glEnable(GL_CULL_FACE);
+                    glCullFace(GL_BACK);
+                    glUniform1i(wfEnabledLoc, 0);
+                    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+                    drawInstance(inst, vMat, 1);
                 }
             }
         }
@@ -142,7 +145,7 @@ void initRenderer(const char* cmd) {
         free(betterCmd);
     } else {
         char fb[100];
-        sprintf(fb, "%sassets\\models\\sphere.obj", installDirectory);
+        sprintf(fb, "%sassets\\models\\sphereSmooth.obj", installDirectory);
         monkey = createInstanceFromFile(fb);
     }
 

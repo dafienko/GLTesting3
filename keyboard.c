@@ -41,26 +41,13 @@ void initKeyboard() {
 }
 
 void keyDown(int key) {
-    *(addBuffer + currentLength) = key;
-    currentLength++;
+
 }
 
 void keyUp(int key) {
-    for (int i = 0; i < currentLength; i++) {
-        if (key == *(addBuffer + i)) {
-            *(addBuffer + i) = -1;
-        }
-    }
+
 }
 
 int isKeyDown(int key) {
-
-    /*
-    for (int i = 0; i < kbdBufferSize; i++) {
-        if (key == *(keysDown + i)) {
-            return 1;
-        }
-    }
-    */
-    return GetAsyncKeyState(key);
+    return GetKeyState(key) < 0;
 }

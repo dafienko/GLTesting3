@@ -25,7 +25,6 @@
 #define ID_HIERARCHY 100
 #define ID_VIEWPORT 101
 
-LRESULT MouseProc(int, WPARAM, LPARAM);
 LRESULT CALLBACK WindowProc(HWND, UINT, WPARAM, LPARAM);
 LRESULT CALLBACK hierarchyWndProc(HWND, UINT, WPARAM, LPARAM);
 LRESULT CALLBACK viewportWindowProc(HWND, UINT, WPARAM, LPARAM);
@@ -45,6 +44,8 @@ HINSTANCE hInstance;
 HWND hHierarchyWnd;
 HWND hMainWnd;
 HWND hViewportWnd;
+
+HBRUSH selectedBrush;
 
 int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hPrevInstance,LPSTR lpCmdLine,int nCmdShow)
 {
@@ -112,7 +113,8 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hPrevInstance,LPSTR lpCmdLine,int n
     RegisterClassEx(&hierarchyWndClass);
     RegisterClassEx(&viewportWndClass);
 
-
+    COLORREF windowColor = GetSysColor(COLOR_HIGHLIGHT);
+    selectedBrush = CreateSolidBrush(windowColor);
 
     hMainWnd = CreateWindowEx(0,
                           TEXT("Main Window"),
@@ -167,8 +169,6 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hPrevInstance,LPSTR lpCmdLine,int n
     Rid[0].hwndTarget = hViewportWnd;
     RegisterRawInputDevices(Rid, 1, sizeof(Rid[0]));
 
-    SetWindowsHookEx(WH_MOUSE, (HOOKPROC)MouseProc, NULL, 0);
-
     EnableOpenGL(hViewportWnd, &hdc, &hRC);
 
     GLEInit();
@@ -180,10 +180,6 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hPrevInstance,LPSTR lpCmdLine,int n
     updateSize(baseWidth - 300, baseHeight);
 
     initGame();
-
-
-
-
 
     while (!bQuit)
     {
@@ -269,14 +265,6 @@ void DisableOpenGL (HWND hWnd, HDC hdc, HGLRC hRC)
     ReleaseDC(hWnd, hdc);
 }
 
-LRESULT MouseProc(int nCode, WPARAM wParam, LPARAM lParam) {
-    if (wParam == WM_MOUSEMOVE) {
-
-    }
-
-    return CallNextHookEx(NULL, nCode, wParam, lParam);
-}
-
 int tHeight = 24;
 int padding = 5;
 
@@ -310,15 +298,87 @@ void clearButtons(BUTTON** buttons) {
     }
 }
 
+void deselectChildren(INSTANCE* parent) {
+    for (int i = 0; i < MAX_INSTANCES; i++) {
+        INSTANCE* inst = *(instances + i);
+        if (inst != NULL) {
+            if (inst->parent == parent || parent == NULL) {
+                inst->selected = FALSE;
+                deselectChildren(inst);
+            }
+        }
+    }
+}
+
 void hButtonCallback(int id) {
     INSTANCE* inst = *(instances + id);
     inst->expanded = !(inst->expanded);
+
+    if (!inst->expanded) { // if the instance has been collapsed, deselect all its children
+        deselectChildren(inst);
+    }
+
     InvalidateRect(hHierarchyWnd, NULL, TRUE);
+}
+
+int sign(int x) {
+    if (x == 0) {
+        return 0;
+    } else {
+        if (x < 0) {
+            return -1;
+        } else {
+            return 1;
+        }
+    }
+}
+
+void hMainButtonCallback(int id) {
+    static int lastSelected = -1; // sentinel value of -1
+
+    INSTANCE* inst = *(instances + id);
+
+
+    if (!isKeyDown(VK_LSHIFT)) {
+        deselectChildren(NULL);
+    } else {
+        if (lastSelected >= 0) { // lastSelected has actually been initialized
+            int diff = id - lastSelected;
+            for (int i = 1; i <= abs(diff); i++) { // select everything in between this button and
+                int offset = lastSelected + i * sign(diff);
+                INSTANCE* thisInst = *(instances + offset);
+                thisInst->selected = TRUE;
+            }
+        }
+    }
+
+    inst->selected = TRUE;
+
+    InvalidateRect(hHierarchyWnd, NULL, TRUE);
+
+    lastSelected = id;
 }
 
 void drawInstanceInHierarchy(HDC hdc, INSTANCE* inst, int x, int y, int instId, BUTTON** buttons) {
     int imgSize = (int)(tHeight * .8);
     int imgDiff = tHeight - imgSize;
+
+    BUTTON* b = calloc(sizeof(BUTTON), 1);
+    *b = (BUTTON) {(RECT){x, y+imgDiff/2, x+imgSize, y+imgDiff/2+imgSize}, instId, &hButtonCallback};
+    addButton(buttons, b);
+
+    BUTTON* mainButton = calloc(sizeof(BUTTON), 1);
+    RECT mainButtonRect = (RECT){x + tHeight, y, x + 200, y+tHeight};
+    *mainButton = (BUTTON){mainButtonRect, instId, &hMainButtonCallback};
+    addButton(buttons, mainButton);
+
+    SetBkColor(hdc, RGB(0, 0, 255));
+
+    if (inst->selected) {
+        RECT mainButtonFrameRect = (RECT){x, y - padding, x + 250, y + tHeight + padding};
+        FillRect(hdc, &mainButtonFrameRect, selectedBrush);
+    }
+
     if (!inst->expanded) {
         StretchBlt(hdc, x, y + imgDiff/2, imgSize, imgSize, hdcCollapsedMask, 0, 0, 100, 100, SRCAND);
         StretchBlt(hdc, x, y + imgDiff/2, imgSize, imgSize, hdcCollapsedSource, 0, 0, 100, 100, SRCPAINT);
@@ -326,11 +386,12 @@ void drawInstanceInHierarchy(HDC hdc, INSTANCE* inst, int x, int y, int instId, 
         StretchBlt(hdc, x, y + imgDiff/2, imgSize, imgSize, hdcExpandedMask, 0, 0, 100, 100, SRCAND);
         StretchBlt(hdc, x, y + imgDiff/2, imgSize, imgSize, hdcExpandedSource, 0, 0, 100, 100, SRCPAINT);
     }
-    BUTTON* b = calloc(sizeof(BUTTON), 1);
-    *b = (BUTTON) {(RECT){x, y+imgDiff/2, x+imgSize, y+imgDiff/2+imgSize}, instId, &hButtonCallback};
-    addButton(buttons, b);
+
+    SetTextColor(hdc, RGB(255, 255, 255));
+
     TextOut(hdc, x + tHeight, y, inst->name, strlen(inst->name));
 }
+
 
 int drawInstanceChildren(INSTANCE* parent, HDC hdc, BUTTON** buttons, int x, int y) {
     int height = y;
@@ -402,7 +463,6 @@ LRESULT CALLBACK hierarchyWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
                 clearButtons(buttons);
                 hdc = BeginPaint(hWnd, &ps);
                 SetBkMode(hdc, TRANSPARENT);
-                SetTextColor(hdc, RGB(255, 255, 255));
 
                 SelectObject(hdc,hFont);
 
@@ -467,7 +527,7 @@ LRESULT CALLBACK viewportWindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM l
             break;
         case WM_MOUSEMOVE:
             if (mouseLocked) {
-                GetWindowRect(hWnd, &rect);
+                GetWindowRect(hViewportWnd, &rect);
                 if (trackMouse) {
                     SetCursorPos((rect.left + rect.right)/2, (rect.top + rect.bottom)/2);
                 } else {
@@ -478,21 +538,19 @@ LRESULT CALLBACK viewportWindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM l
             break;
 
         case WM_RBUTTONUP:
-            print("rbuttonup\n");
             showMouse();
             unlockMouse();
             trackMouse = 0;
             break;
 
         case WM_RBUTTONDOWN:
-            print("rbuttondown\n");
             hideMouse();
             lockMouse();
             trackMouse = 0;
             break;
 
         case WM_MOUSEACTIVATE:
-            if (wParam == hViewportWnd) {
+            if ((int)wParam == (int)hViewportWnd) {
                 SetCapture(hWnd);
                 return MA_ACTIVATE;
             }

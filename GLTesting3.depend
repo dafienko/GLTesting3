@@ -144,7 +144,7 @@
 	"ghettoWin.h"
 	<KHR/khrplatform.h>
 
-1586205746 source:d:\codeblocksworkspace\gltesting3\main.c
+1588273894 source:d:\codeblocksworkspace\gltesting3\main.c
 	<stdio.h>
 	"ghettoWin.h"
 	<winuser.h>
@@ -161,13 +161,13 @@
 
 1582513541 d:\codeblocksworkspace\gltesting3\shaderutil.h
 
-1586205185 d:\codeblocksworkspace\gltesting3\renderer.h
+1588267473 d:\codeblocksworkspace\gltesting3\renderer.h
 	<gl/gl.h>
 	"ghettoWin.h"
 	"glMath.h"
 	"fileUtil.h"
 
-1586204153 source:d:\codeblocksworkspace\gltesting3\renderer.c
+1588274143 source:d:\codeblocksworkspace\gltesting3\renderer.c
 	<stdio.h>
 	<stdlib.h>
 	"ghettoWin.h"
@@ -240,7 +240,7 @@
 
 1582513522 d:\codeblocksworkspace\gltesting3\keyboard.h
 
-1583538692 source:d:\codeblocksworkspace\gltesting3\keyboard.c
+1588272515 source:d:\codeblocksworkspace\gltesting3\keyboard.c
 	"ghettoWin.h"
 	"keyboard.h"
 	"consoleUtil.h"
