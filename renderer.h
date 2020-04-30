@@ -11,6 +11,7 @@
 
 #define MAX_INSTANCES 100
 
+float lineThickness;
 int drawMode;
 
 typedef struct instance {

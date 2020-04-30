@@ -113,5 +113,15 @@ void updateGame(float dt) {
     if (isKeyDown(0x47)) {// g
         drawMode = DM_LINE;
     }
+
+    if (isKeyDown(VK_OEM_MINUS)) { // -
+        lineThickness -= .5;
+        lineThickness = max(lineThickness, .5);
+    }
+
+    if (isKeyDown(VK_OEM_PLUS)) { // =
+        lineThickness += .5;
+        lineThickness = min(lineThickness, 160);
+    }
 }
 

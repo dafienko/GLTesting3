@@ -20,7 +20,7 @@ GLuint vboId[6];
 GLuint vaoId = 0;
 
 //uniforms
-GLint projLoc, mvLoc, camposLoc, modelposLoc, scaleLoc, mLoc, wfColLoc, wfEnabledLoc, transparencyLoc;
+GLint projLoc, mvLoc, camposLoc, modelposLoc, scaleLoc, mLoc, wfColLoc, wfEnabledLoc, transparencyLoc, lightDirLoc;
 
 #define tPos 1
 #define yOff 1
@@ -29,6 +29,7 @@ int timeSincePhysicsUpdate = 0;
 const int timeBetweenPhysicsUpdates = 10; // milliseconds
 float dtMs;
 int ms;
+vec3 lightDir;
 
 MESH* monkeyMesh;
 INSTANCE* monkey;
@@ -70,6 +71,7 @@ void display(CAMERA* c, HDC hdc, HWND hWnd) {  //display function
         wfColLoc = glGetUniformLocation(bp, "wireframeColor");
         wfEnabledLoc = glGetUniformLocation(bp, "wireframeEnabled");
         transparencyLoc = glGetUniformLocation(bp, "transparency");
+        lightDirLoc = glGetUniformLocation(bp, "lightDir");
 
         glUseProgram(bp);
 
@@ -85,7 +87,7 @@ void display(CAMERA* c, HDC hdc, HWND hWnd) {  //display function
 
         mat4 vMat = fromPositionAndRotation(inverseVec3(c->position), inverseVec3(c->rotation));
 
-        glLineWidth(2);
+        glLineWidth(lineThickness);
 
         int instancesDrawn = 0;
         for (int i = 0; i < MAX_INSTANCES; i++) {
@@ -125,7 +127,10 @@ void display(CAMERA* c, HDC hdc, HWND hWnd) {  //display function
 }
 
 void initRenderer(const char* cmd) {
+    lightDir = (vec3){-1, -1, -1};
     drawMode = DM_FACE;
+
+    lineThickness = 1;
 
     instances = (INSTANCE**)calloc(sizeof(INSTANCE*), MAX_INSTANCES);
 
@@ -278,9 +283,9 @@ void drawInstance(INSTANCE* inst, mat4 vMat, int cull) {
 
     glUniform3f(modelposLoc, inst->position.x, inst->position.y, inst->position.z);
     glUniform3f(scaleLoc, inst->scale.x, inst->scale.y, inst->scale.z);
+    glUniform3f(lightDirLoc, lightDir.x, lightDir.y, lightDir.z);
 
     glUniform1f(transparencyLoc, inst->transparency);
-
 
     glBindVertexArray(inst->vao);
 
