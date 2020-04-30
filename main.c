@@ -164,7 +164,7 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hPrevInstance,LPSTR lpCmdLine,int n
     Rid[0].usUsagePage = HID_USAGE_PAGE_GENERIC;
     Rid[0].usUsage = HID_USAGE_GENERIC_MOUSE;
     Rid[0].dwFlags = RIDEV_INPUTSINK;
-    Rid[0].hwndTarget = hMainWnd;
+    Rid[0].hwndTarget = hViewportWnd;
     RegisterRawInputDevices(Rid, 1, sizeof(Rid[0]));
 
     SetWindowsHookEx(WH_MOUSE, (HOOKPROC)MouseProc, NULL, 0);
@@ -172,7 +172,7 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hPrevInstance,LPSTR lpCmdLine,int n
     EnableOpenGL(hViewportWnd, &hdc, &hRC);
 
     GLEInit();
-    initMouse(hMainWnd);
+    initMouse(hViewportWnd);
     initKeyboard();
     print("initializing renderer\n");
     initRenderer(lpCmdLine);
@@ -214,63 +214,15 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hPrevInstance,LPSTR lpCmdLine,int n
 
 LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-    static RECT rect;
-    static int trackMouse = 0;
     switch (uMsg)
     {
-        case WM_MOUSEMOVE:
-            if (mouseLocked) {
-                GetWindowRect(hWnd, &rect);
-                if (trackMouse) {
-                    SetCursorPos((rect.left + rect.right)/2, (rect.top + rect.bottom)/2);
-                } else {
-                    trackMouse = 1;
-                }
-            }
-
-            break;
         case WM_KEYDOWN:
             keyDown(wParam);
-
-            switch (wParam)
-            {
-                case VK_ESCAPE:
-                    if (mouseLocked) {
-                        showMouse();
-                        unlockMouse();
-                        trackMouse = 0;
-                    } else {
-                        hideMouse();
-                        lockMouse();
-                        trackMouse = 0;
-                    }
-                    break;
-
-            }
 
             break;
         case WM_KEYUP:
             keyUp(wParam);
 
-            break;
-        case WM_INPUT:
-            if (mouseLocked) {
-                UINT dwSize = 40;
-                static BYTE lpb[40];
-
-                GetRawInputData((HRAWINPUT)lParam, RID_INPUT,
-                                lpb, &dwSize, sizeof(RAWINPUTHEADER));
-
-                RAWINPUT* raw = (RAWINPUT*)lpb;
-
-                if (raw->header.dwType == RIM_TYPEMOUSE)
-                {
-                    int xPosRelative = raw->data.mouse.lLastX;
-                    int yPosRelative = raw->data.mouse.lLastY;
-                    addMouseDelta(xPosRelative, yPosRelative);
-
-                }
-            }
             break;
         case WM_SIZE:
             PostMessage(hHierarchyWnd, uMsg, wParam, lParam);
@@ -279,7 +231,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         default:
             return DefWindowProc(hWnd, uMsg, wParam, lParam);
     }
-    return 0;
+    return DefWindowProc(hWnd, uMsg, wParam, lParam);
 }
 
 void EnableOpenGL(HWND hWnd, HDC* hdc, HGLRC* hRC)
@@ -491,9 +443,66 @@ LRESULT CALLBACK viewportWindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM l
     static HDC hdc;
     static PAINTSTRUCT ps;
     static RECT rect;
-
+    static int trackMouse = 0;
 
     switch(msg) {
+        case WM_INPUT:
+            if (mouseLocked) {
+                UINT dwSize = 40;
+                static BYTE lpb[40];
+
+                GetRawInputData((HRAWINPUT)lParam, RID_INPUT,
+                                lpb, &dwSize, sizeof(RAWINPUTHEADER));
+
+                RAWINPUT* raw = (RAWINPUT*)lpb;
+
+                if (raw->header.dwType == RIM_TYPEMOUSE)
+                {
+                    int xPosRelative = raw->data.mouse.lLastX;
+                    int yPosRelative = raw->data.mouse.lLastY;
+                    addMouseDelta(xPosRelative, yPosRelative);
+
+                }
+            }
+            break;
+        case WM_MOUSEMOVE:
+            if (mouseLocked) {
+                GetWindowRect(hWnd, &rect);
+                if (trackMouse) {
+                    SetCursorPos((rect.left + rect.right)/2, (rect.top + rect.bottom)/2);
+                } else {
+                    trackMouse = 1;
+                }
+            }
+
+            break;
+
+        case WM_RBUTTONUP:
+            print("rbuttonup\n");
+            showMouse();
+            unlockMouse();
+            trackMouse = 0;
+            break;
+
+        case WM_RBUTTONDOWN:
+            print("rbuttondown\n");
+            hideMouse();
+            lockMouse();
+            trackMouse = 0;
+            break;
+
+        case WM_MOUSEACTIVATE:
+            if (wParam == hViewportWnd) {
+                SetCapture(hWnd);
+                return MA_ACTIVATE;
+            }
+            break;
+        case WM_ACTIVATE:
+            if (wParam == WA_INACTIVE) {
+                ReleaseCapture();
+                return 0;
+            }
+            break;
         case WM_SIZE:
             ;
             GetClientRect(hMainWnd, &rect);
