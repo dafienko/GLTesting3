@@ -26,6 +26,7 @@ typedef struct instance {
     char* name;
     int expanded;
     int selected;
+    int mouseOverHierarchy;
 } INSTANCE;
 
 typedef struct camera {
